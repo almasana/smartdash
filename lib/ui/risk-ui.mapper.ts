@@ -1,9 +1,27 @@
-import { RiskLevel, RiskSeverity } from "@/lib/domain/risk";
+import { RiskSeverity } from "@/lib/domain/risk";
 
 /**
- * CONFIGURACIÓN VISUAL DE NIVELES (Negocio)
+ * ------------------------------------------------------------------
+ * NIVELES DE RIESGO (UI / NEGOCIO)
+ * No forman parte del dominio técnico.
+ * ------------------------------------------------------------------
  */
-export const RISK_LEVEL_UI = {
+export type RiskLevelUI =
+  | "critico"
+  | "alto"
+  | "moderado"
+  | "bajo"
+  | "estable";
+
+export const RISK_LEVEL_UI: Record<
+  RiskLevelUI,
+  {
+    label: string;
+    badge: string;
+    icon: string;
+    description: string;
+  }
+> = {
   critico: {
     label: "Crítico",
     badge: "bg-red-100 text-red-700 border-red-200",
@@ -34,12 +52,21 @@ export const RISK_LEVEL_UI = {
     icon: "CheckCircle",
     description: "Sin riesgos detectados",
   },
-} as const;
+};
 
 /**
- * CONFIGURACIÓN VISUAL DE SEVERIDADES (Técnico)
+ * ------------------------------------------------------------------
+ * SEVERIDADES TÉCNICAS (DOMINIO)
+ * ------------------------------------------------------------------
  */
-export const SEVERITY_UI = {
+export const SEVERITY_UI: Record<
+  RiskSeverity,
+  {
+    label: string;
+    color: string;
+    dot: string;
+  }
+> = {
   critical: {
     label: "Severidad Crítica",
     color: "text-red-600",
@@ -60,10 +87,15 @@ export const SEVERITY_UI = {
     color: "text-blue-500",
     dot: "bg-blue-500",
   },
-} as const;
+};
 
 /**
- * MAPPERS DE UTILIDAD
+ * ------------------------------------------------------------------
+ * MAPPERS
+ * ------------------------------------------------------------------
  */
-export const getRiskLevelUI = (level: RiskLevel) => RISK_LEVEL_UI[level];
-export const getSeverityUI = (severity: RiskSeverity) => SEVERITY_UI[severity];
+export const getRiskLevelUI = (level: RiskLevelUI) =>
+  RISK_LEVEL_UI[level] ?? RISK_LEVEL_UI.estable;
+
+export const getSeverityUI = (severity: RiskSeverity) =>
+  SEVERITY_UI[severity];

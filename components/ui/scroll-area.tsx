@@ -1,12 +1,32 @@
-// components/ui/scroll-area.tsx
 "use client";
 
-import React from "react";
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-export const ScrollArea = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <div className="flex-1 p-4 overflow-y-auto max-h-[400px]">
-      {children}
-    </div>
-  );
-};
+export interface ScrollAreaProps extends React.HTMLAttributes<HTMLDivElement> {
+  orientation?: "vertical" | "horizontal" | "both";
+}
+
+const ScrollArea = React.forwardRef<HTMLDivElement, ScrollAreaProps>(
+  ({ className, children, orientation = "vertical", ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "relative overflow-hidden",
+          orientation === "horizontal" && "overflow-x-auto",
+          orientation === "vertical" && "overflow-y-auto",
+          orientation === "both" && "overflow-auto",
+          "scrollbar-hide", // Asegúrate de tener esta clase o usar custom-scroll
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  }
+);
+ScrollArea.displayName = "ScrollArea";
+
+export { ScrollArea };

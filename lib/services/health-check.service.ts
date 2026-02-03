@@ -1,74 +1,78 @@
 // lib/services/health-check.service.ts
-"use server"
+"use server";
 
-import { sql } from "@/lib/db"
-import { isDatabaseConnected } from "@/lib/db"
+import { sql } from "@/lib/db";
+import { isDatabaseConnected } from "@/lib/db";
 
 export interface HealthStatus {
-  service: string
-  healthy: boolean
-  issues: string[]
+  service: string;
+  healthy: boolean;
+  issues: string[];
 }
 
 /**
  * Verifica la salud de los servicios críticos
  */
-export async function checkRiskDataHealth(segment: string): Promise<HealthStatus[]> {
-  const status: HealthStatus[] = []
-  
+export async function checkRiskDataHealth(
+  segment: string,
+): Promise<HealthStatus[]> {
+  const status: HealthStatus[] = [];
+
   // Check 1: Database connection
-  const dbHealthy = isDatabaseConnected()
+  const dbHealthy = isDatabaseConnected();
   status.push({
-    service: 'Database',
+    service: "Database",
     healthy: dbHealthy,
-    issues: dbHealthy ? [] : ['DATABASE_URL no configurada']
-  })
-  
+    issues: dbHealthy ? [] : ["DATABASE_URL no configurada"],
+  });
+
   if (!dbHealthy) {
-    return status
+    return status;
   }
-  
+
+  // sql is guaranteed to be non-null here
+  const db = sql!;
+
   try {
     // Check 2: Snapshots exist
-    const snapshotsResult = await sql`
+    const snapshotsResult = await db`
       SELECT COUNT(*) as count FROM risk_snapshots LIMIT 1
-    `
-    const hasSnapshots = snapshotsResult[0]?.count > 0
+    `;
+    const hasSnapshots = snapshotsResult[0]?.count > 0;
     status.push({
-      service: 'Snapshots',
+      service: "Snapshots",
       healthy: hasSnapshots,
-      issues: hasSnapshots ? [] : ['No hay snapshots de riesgo']
-    })
-    
+      issues: hasSnapshots ? [] : ["No hay snapshots de riesgo"],
+    });
+
     // Check 3: Clients for segment
-    const clientsResult = await sql`
+    const clientsResult = await db`
       SELECT COUNT(*) as count FROM clients WHERE segment = ${segment} OR ${segment} = 'all' LIMIT 1
-    `
-    const hasClients = clientsResult[0]?.count > 0
+    `;
+    const hasClients = clientsResult[0]?.count > 0;
     status.push({
-      service: 'Clients',
+      service: "Clients",
       healthy: hasClients,
-      issues: hasClients ? [] : [`No hay clientes para el segmento ${segment}`]
-    })
-    
+      issues: hasClients ? [] : [`No hay clientes para el segmento ${segment}`],
+    });
+
     // Check 4: Notifications
-    const notificationsResult = await sql`
+    const notificationsResult = await db`
       SELECT COUNT(*) as count FROM notifications WHERE type = 'whatsapp' LIMIT 1
-    `
-    const hasNotifications = notificationsResult[0]?.count > 0
+    `;
+    const hasNotifications = notificationsResult[0]?.count > 0;
     status.push({
-      service: 'Notifications',
+      service: "Notifications",
       healthy: true, // Notifications are optional
-      issues: hasNotifications ? [] : ['No hay notificaciones']
-    })
-    
-  } catch (error) {
+      issues: hasNotifications ? [] : ["No hay notificaciones"],
+    });
+  } catch {
     status.push({
-      service: 'Query',
+      service: "Query",
       healthy: false,
-      issues: ['Error ejecutando consultas de health check']
-    })
+      issues: ["Error ejecutando consultas de health check"],
+    });
   }
-  
-  return status
+
+  return status;
 }

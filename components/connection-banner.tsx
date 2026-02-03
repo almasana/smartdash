@@ -1,7 +1,7 @@
-import { AlertCircle, Database } from 'lucide-react'
+import { AlertCircle, Database } from "lucide-react";
 
 interface ConnectionBannerProps {
-  message: string
+  message: string;
 }
 
 export function ConnectionBanner({ message }: ConnectionBannerProps) {
@@ -13,7 +13,7 @@ export function ConnectionBanner({ message }: ConnectionBannerProps) {
       </div>
       <div className="flex-1">
         <p className="text-sm text-amber-200">
-          <span className="font-medium">Modo Demo:</span>{' '}
+          <span className="font-medium">Modo Demo:</span>{" "}
           <span className="text-amber-300/80">{message}</span>
         </p>
       </div>
@@ -26,5 +26,5 @@ export function ConnectionBanner({ message }: ConnectionBannerProps) {
         Ver documentación
       </a>
     </div>
-  )
+  );
 }

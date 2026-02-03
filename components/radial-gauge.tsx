@@ -1,213 +1,105 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { RISK_COLORS, type RiskLevel } from '@/lib/data'
+import React from "react";
 
 interface RadialGaugeProps {
-  value: number
-  maxValue: number
-  level: RiskLevel
-  size?: number
-  strokeWidth?: number
-  label?: string
-  showValue?: boolean
+  value: number;
+  maxValue?: number;
+  size?: number;
+  strokeWidth?: number;
+  label?: string;
 }
 
 export function RadialGauge({
   value,
-  maxValue,
-  level,
+  maxValue = 100,
   size = 200,
-  strokeWidth = 20,
-  label,
-  showValue = true,
+  strokeWidth = 15,
+  label = "RIESGO",
 }: RadialGaugeProps) {
-  const [animatedValue, setAnimatedValue] = useState(0)
+  // 1. Sanitización de Inputs (El Blindaje)
+  // Si value es undefined, null o NaN, usamos 0.
+  const safeValue = Number.isFinite(value) ? value : 0;
+  const safeMax = Number.isFinite(maxValue) && maxValue > 0 ? maxValue : 100;
+  
+  // 2. Matemáticas del Gauge
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const progress = Math.min(Math.max(safeValue / safeMax, 0), 1); // Clamp entre 0 y 1
+  const offset = circumference - progress * circumference;
 
-  const radius = (size - strokeWidth) / 2
-  const circumference = radius * Math.PI // Semi-circle
-  const center = size / 2
+  // 3. Validación Final de Matemáticas
+  // Si por alguna razón offset sigue siendo NaN, forzamos 0 para evitar el crash del DOM
+  const safeOffset = Number.isFinite(offset) ? offset : 0;
 
-  useEffect(() => {
-    const duration = 1500
-    const startTime = Date.now()
-    const startValue = animatedValue
+  // Color dinámico
+  const getColor = (v: number) => {
+    if (v >= 80) return "#ef4444"; // Red
+    if (v >= 50) return "#f97316"; // Orange
+    if (v >= 30) return "#eab308"; // Yellow
+    return "#10b981"; // Emerald
+  };
 
-    const animate = () => {
-      const elapsed = Date.now() - startTime
-      const progress = Math.min(elapsed / duration, 1)
-
-      // Easing function (ease-out-cubic)
-      const easeOut = 1 - Math.pow(1 - progress, 3)
-      const currentValue = startValue + (value - startValue) * easeOut
-
-      setAnimatedValue(currentValue)
-
-      if (progress < 1) {
-        requestAnimationFrame(animate)
-      }
-    }
-
-    requestAnimationFrame(animate)
-  }, [value])
-
-  const percentage = animatedValue / maxValue
-  const strokeDashoffset = circumference * (1 - percentage)
-
-  const color = RISK_COLORS[level]
-
-  // Create gradient stops based on risk level
-  const gradientId = `gauge-gradient-${label?.replace(/\s/g, '-')}`
+  const color = getColor(safeValue);
+  const rotation = progress * 360;
 
   return (
-    <div className="relative flex flex-col items-center">
-      <svg width={size} height={size / 2 + 20} className="overflow-visible">
-        <defs>
-          <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#22c55e" />
-            <stop offset="50%" stopColor="#eab308" />
-            <stop offset="100%" stopColor="#ef4444" />
-          </linearGradient>
-        </defs>
-
-        {/* Background arc */}
-        <path
-          d={`M ${strokeWidth / 2} ${center} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${center}`}
-          fill="none"
-          stroke="currentColor"
+    <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+      <svg
+        height={size}
+        width={size}
+        className="transform -rotate-90"
+        viewBox={`0 0 ${size} ${size}`}
+      >
+        {/* Background Circle */}
+        <circle
+          stroke="#e2e8f0"
           strokeWidth={strokeWidth}
-          className="text-muted/30"
-          strokeLinecap="round"
+          fill="transparent"
+          r={radius}
+          cx={size / 2}
+          cy={size / 2}
         />
-
-        {/* Animated foreground arc */}
-        <path
-          d={`M ${strokeWidth / 2} ${center} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${center}`}
-          fill="none"
-          stroke={`url(#${gradientId})`}
+        {/* Progress Circle */}
+        <circle
+          stroke={color}
           strokeWidth={strokeWidth}
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={strokeDashoffset}
-          className="transition-all duration-100"
-          style={{
-            filter: `drop-shadow(0 0 6px ${color}40)`,
+          strokeDasharray={`${circumference} ${circumference}`}
+          style={{ 
+            strokeDashoffset: safeOffset, 
+            transition: "stroke-dashoffset 1s ease-in-out" 
           }}
+          strokeLinecap="round"
+          fill="transparent"
+          r={radius}
+          cx={size / 2}
+          cy={size / 2}
         />
-
-        {/* Tick marks */}
-        {[0, 25, 50, 75, 100].map((tick) => {
-          const angle = Math.PI * (1 - tick / 100)
-          const innerRadius = radius - strokeWidth / 2 - 8
-          const outerRadius = radius - strokeWidth / 2 - 4
-          const x1 = center + innerRadius * Math.cos(angle)
-          const y1 = center - innerRadius * Math.sin(angle)
-          const x2 = center + outerRadius * Math.cos(angle)
-          const y2 = center - outerRadius * Math.sin(angle)
-
-          return (
-            <line
-              key={tick}
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
-              stroke="currentColor"
-              strokeWidth={2}
-              className="text-muted-foreground/50"
-            />
-          )
-        })}
       </svg>
 
-      {showValue && (
-        <div className="absolute bottom-0 flex flex-col items-center">
-          <span
-            className="text-4xl font-bold tabular-nums"
-            style={{ color }}
-          >
-            {Math.round(animatedValue)}
-          </span>
-          {label && (
-            <span className="text-sm text-muted-foreground">{label}</span>
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// Mini gauge for alerts counters
-export function MiniGauge({
-  value,
-  maxValue,
-  color,
-  label,
-}: {
-  value: number
-  maxValue: number
-  color: string
-  label: string
-}) {
-  const [animatedValue, setAnimatedValue] = useState(0)
-
-  const size = 100
-  const strokeWidth = 8
-  const radius = (size - strokeWidth) / 2
-  const circumference = radius * Math.PI
-
-  useEffect(() => {
-    const duration = 1000
-    const startTime = Date.now()
-
-    const animate = () => {
-      const elapsed = Date.now() - startTime
-      const progress = Math.min(elapsed / duration, 1)
-      const easeOut = 1 - Math.pow(1 - progress, 3)
-      setAnimatedValue(value * easeOut)
-
-      if (progress < 1) {
-        requestAnimationFrame(animate)
-      }
-    }
-
-    requestAnimationFrame(animate)
-  }, [value])
-
-  const percentage = animatedValue / maxValue
-  const strokeDashoffset = circumference * (1 - percentage)
-
-  return (
-    <div className="flex flex-col items-center gap-1">
-      <div className="relative">
-        <svg width={size} height={size / 2 + 10}>
-          <path
-            d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={strokeWidth}
-            className="text-muted/30"
-            strokeLinecap="round"
-          />
-          <path
-            d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
-            fill="none"
-            stroke={color}
-            strokeWidth={strokeWidth}
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={strokeDashoffset}
-            style={{ filter: `drop-shadow(0 0 4px ${color}40)` }}
-          />
-        </svg>
-        <span
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 text-2xl font-bold tabular-nums"
-          style={{ color }}
-        >
-          {Math.round(animatedValue)}
+      {/* Center Text */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+        <span className="text-3xl font-bold text-slate-700 dark:text-slate-200">
+          {safeValue.toFixed(1)}
+        </span>
+        <span className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">
+          {label}
         </span>
       </div>
-      <span className="text-xs text-muted-foreground text-center">{label}</span>
+      
+      {/* Needle (Aguja Decorativa) */}
+      <div 
+        className="absolute top-0 left-0 w-full h-full pointer-events-none"
+        style={{ transform: `rotate(${rotation}deg)`, transition: "transform 1s ease-out" }}
+      >
+        <div 
+            className="w-1.5 h-4 absolute bg-slate-800 dark:bg-white rounded-full shadow-md" 
+            style={{ 
+                left: 'calc(50% - 3px)', 
+                top: strokeWidth - 4 // Ajuste visual para que la aguja "flote" sobre el anillo
+            }} 
+        />
+      </div>
     </div>
-  )
+  );
 }

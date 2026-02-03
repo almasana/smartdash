@@ -1,11 +1,11 @@
-'use client'
+"use client";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
 interface ColoredProgressProps {
-  value: number
-  color: string
-  className?: string
+  value: number;
+  color: string;
+  className?: string;
 }
 
 export function ColoredProgress({
@@ -16,8 +16,8 @@ export function ColoredProgress({
   return (
     <div
       className={cn(
-        'relative h-2 w-full overflow-hidden rounded-full',
-        className
+        "relative h-2 w-full overflow-hidden rounded-full",
+        className,
       )}
       style={{ backgroundColor: `${color}20` }}
     >
@@ -30,5 +30,5 @@ export function ColoredProgress({
         }}
       />
     </div>
-  )
+  );
 }

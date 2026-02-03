@@ -47,7 +47,8 @@ export function evaluateRisk(signals: RiskSignal[]): RiskEvaluation {
     totalWeights += weight;
   });
 
-  const calculatedScore = totalWeights > 0 ? totalWeightedScore / totalWeights : 0;
+  const calculatedScore =
+    totalWeights > 0 ? totalWeightedScore / totalWeights : 0;
   const score = Math.max(0, Math.min(100, Math.round(calculatedScore)));
 
   // 3. Determinación de Nivel y Semántica de UI

@@ -1,26 +1,13 @@
-import { DashboardContent } from '@/components/dashboard-content'
-import { filterByRubro } from '@/lib/actions'
-import { RUBROS } from '@/lib/data'
+import { getInitialDashboardData } from '@/lib/actions';
+import { DashboardContent } from '@/components/dashboard-content';
+import { ALL_SEGMENTS } from '@/lib/domain/risk';
 
-export default async function SmartDashboard() {
-  // Fetch initial data on the server using the unified contract
-  const initialData = await filterByRubro('all')
-
-  if (!initialData) {
-    return (
-      <div className="flex h-screen items-center justify-center text-center p-8 text-muted-foreground">
-        <div>
-          <h1 className="text-2xl font-bold mb-2">Sin datos disponibles</h1>
-          <p>No se pudo cargar la informacion del dashboard.</p>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <DashboardContent
-      initialData={initialData}
-      rubros={RUBROS}
-    />
-  )
+export default async function Page() {
+  const data = await getInitialDashboardData();
+  if (!data) return (
+    <div className="h-screen flex items-center justify-center bg-[oklch(0.145_0_0)] text-[oklch(0.985_0_0)]">
+      Sincronizando Riesgos...
+    </div>
+  );
+  return <DashboardContent initialData={data} currentRubro={ALL_SEGMENTS} />;
 }

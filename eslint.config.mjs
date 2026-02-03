@@ -20,5 +20,5 @@ export default [
   {
     // Ignorar carpetas de build para que no den errores falsos
     ignores: [".next/*", "node_modules/*", "dist/*"],
-  }
+  },
 ];

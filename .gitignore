@@ -1,27 +1,22 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+.gitignore
+README.md
 
-# dependencies
-/node_modules
+package.json
+pnpm-lock.yaml
+pnpm-workspace.yaml   (solo si usás workspaces / monorepo)
 
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files
-.env*
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
+next.config.mjs
 next-env.d.ts
+
+tsconfig.json
+tailwind.config.js
+postcss.config.js
+
+eslint.config.mjs
+
+components.json
+.env.local
+.next/
+node_modules/
+tsconfig.tsbuildinfo
+demo/

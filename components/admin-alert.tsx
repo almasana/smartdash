@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
 interface AdminAlertProps {
-  issues: string[]
+  issues: string[];
 }
 
 export function AdminAlert({ issues }: AdminAlertProps) {
-  if (!issues || issues.length === 0) return null
+  if (!issues || issues.length === 0) return null;
 
   return (
     <div className="p-3 mb-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs">
@@ -16,5 +16,5 @@ export function AdminAlert({ issues }: AdminAlertProps) {
         ))}
       </ul>
     </div>
-  )
+  );
 }

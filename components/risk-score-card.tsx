@@ -1,97 +1,75 @@
-import React from 'react'
-import { RiskEvaluation } from '@/lib/domain/risk'
-import { getRiskLevelUI } from '@/lib/ui/risk-ui.mapper'
-import { RadialGauge } from '@/components/radial-gauge'
-import { ColoredProgress } from '@/components/colored-progress'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+"use client";
+
+import React from "react";
+import { RiskEvaluation } from "@/lib/domain/risk";
+import { RadialGauge } from "@/components/radial-gauge";
 
 interface RiskScoreCardProps {
-  evaluation: RiskEvaluation
-  metrics: Record<string, unknown>
+  evaluation: RiskEvaluation;
+  metrics?: Record<string, unknown>;
 }
 
-export function RiskScoreCard({ evaluation, metrics }: RiskScoreCardProps) {
-  // Unica fuente de verdad visual: El Mapper
-  const ui = getRiskLevelUI(evaluation.level)
+export function RiskScoreCard({ evaluation }: RiskScoreCardProps) {
+  const { score, level } = evaluation;
 
-  // Normalizacion de metricas para las barras de progreso
-  const humanCapital = typeof metrics?.human_capital_index === 'number' 
-    ? metrics.human_capital_index 
-    : 85
-  const financialCapital = typeof metrics?.financial_stability_index === 'number'
-    ? metrics.financial_stability_index
-    : evaluation.score
+  // Mapeo visual corporativo
+  const isCritical = score >= 80;
+  const statusColor = isCritical ? "text-red-600" : score >= 50 ? "text-orange-500" : "text-emerald-600";
+  const barColor = isCritical ? "bg-red-600" : score >= 50 ? "bg-orange-500" : "bg-emerald-600";
 
   return (
-    <Card className="overflow-hidden border-none bg-gradient-to-br from-card to-muted/30 shadow-lg">
-      <CardContent className="p-6">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-12 items-center">
-          
-          {/* LADO IZQUIERDO: El Gauge y el Score */}
-          <div className="md:col-span-4 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-border pb-6 md:pb-0">
-            <div className="relative h-48 w-48">
-              <RadialGauge 
-                value={evaluation.score}
-                maxValue={100}
-                level={evaluation.level as any}
-              />
-              <div className="absolute inset-0 flex flex-col items-center justify-center pt-8">
-                <span className={`text-5xl font-black tracking-tighter ${evaluation.color}`}>
-                  {evaluation.score}
-                </span>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Risk Score
-                </span>
-              </div>
-            </div>
-            
-            <Badge variant="outline" className={`mt-4 px-4 py-1 text-sm font-bold uppercase tracking-tight ${ui.badge}`}>
-              Nivel: {ui.label}
-            </Badge>
-          </div>
+    // Panel estilo "Papel Corporativo" o "Tarjeta High-End"
+    <div className="w-full bg-[#f8fafc] dark:bg-[#1e293b] rounded-2xl p-6 shadow-xl border border-slate-200 dark:border-white/10 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+      
+      {/* Decoración de fondo sutil (circuitería o grid) */}
+      <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/circuit-board.png')] pointer-events-none" />
 
-          {/* LADO DERECHO: Analisis y Metricas */}
-          <div className="md:col-span-8 space-y-6">
-            <div>
-              <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-2">
-                Analisis de Situacion
-              </h2>
-              <p className="text-xl font-medium leading-tight text-foreground/90">
-                {evaluation.summary}
-              </p>
-            </div>
+      {/* COLUMNA 1: GAUGE (El Velocímetro) */}
+      <div className="shrink-0 relative z-10">
+        <RadialGauge value={score} size={140} strokeWidth={12} label="SCORE" />
+      </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {/* Capital Humano */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-tighter">
-                  <span>Capital Humano</span>
-                  <span className="text-blue-500">{humanCapital}%</span>
-                </div>
-                <ColoredProgress value={humanCapital} color="#3b82f6" />
-              </div>
-
-              {/* Capital Financiero */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-tighter">
-                  <span>Capital Financiero</span>
-                  <span className="text-green-500">{financialCapital}%</span>
-                </div>
-                <ColoredProgress value={financialCapital} color="#22c55e" />
-              </div>
-            </div>
-
-            {/* Banner Informativo del Mapper */}
-            <div className={`flex items-center gap-3 rounded-lg border p-3 ${ui.badge} bg-opacity-30`}>
-              <div className="flex-1 text-xs font-medium">
-                <strong>Plan de accion:</strong> {ui.description}
-              </div>
-            </div>
-          </div>
-
+      {/* COLUMNA 2: INFO TEXTUAL MASIVA */}
+      <div className="flex-1 w-full relative z-10 flex flex-col justify-center">
+        
+        {/* Título Principal */}
+        <div className="flex flex-col md:flex-row md:items-baseline gap-2 mb-4 text-center md:text-left">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-700 dark:text-slate-200 tracking-tight">
+            ÍNDICE DE RIESGO GLOBAL:
+          </h2>
+          <span className={`text-4xl md:text-5xl font-black ${statusColor} drop-shadow-sm`}>
+            {score.toFixed(1)} ({level?.toUpperCase()})
+          </span>
         </div>
-      </CardContent>
-    </Card>
-  )
+
+        {/* Barra de Salud Organizacional */}
+        <div className="w-full space-y-2">
+           <div className="flex justify-between items-center px-1">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                Salud Organizacional
+              </span>
+              <span className={`text-xs font-bold uppercase ${statusColor}`}>
+                {level}
+              </span>
+           </div>
+           
+           {/* Progress Bar Container */}
+           <div className="h-4 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden shadow-inner relative">
+              {/* Progress Bar Fill */}
+              <div 
+                className={`h-full ${barColor} transition-all duration-1000 ease-out relative`}
+                style={{ width: `${score}%` }}
+              >
+                  {/* Efecto de brillo en la barra */}
+                  <div className="absolute top-0 right-0 bottom-0 w-full bg-gradient-to-r from-transparent to-white/30" />
+              </div>
+           </div>
+           
+           <p className="text-right text-[10px] text-slate-400 italic mt-1">
+             Actualizado en tiempo real • Fuente: SmartDash Engine
+           </p>
+        </div>
+      </div>
+    </div>
+  );
 }
