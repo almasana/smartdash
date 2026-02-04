@@ -47,7 +47,7 @@ export function RubroSelector() {
           SmartDash <span className="text-orange-600">FV</span>
         </h1>
         <p className="text-xl text-slate-500 font-medium max-w-2xl mx-auto">
-          Selecciona un rubro para auditar los riesgos activos detectados por la Fuente de la Verdad.
+          Selecciona un rubro para verificar los riesgos activos detectados por la Fuente de la Verdad.
         </p>
       </div>
 
