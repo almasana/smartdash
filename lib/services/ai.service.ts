@@ -8,76 +8,91 @@ interface AIPlanInput {
   financialContext: Record<string, unknown>;
   scenarioDescription: string;
   recommendationText: string;
-  actionStatus: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
+/**
+ * Plan de contingencia cuando el servicio de IA no está disponible
+ */
 const OFFLINE_PLAN: AIActionPlan = {
   rationale:
-    "El servicio de IA no está disponible momentáneamente. Se presenta un análisis basado en reglas estáticas de negocio.",
-  immediate_steps: [
-    "Revisar manualmente las señales críticas en el panel financiero.",
-    "Validar costos y productividad según contexto financiero.",
-    "Verificar alertas recientes.",
+    "El servicio de análisis inteligente no está disponible. El plan se basa en reglas estáticas de gestión de riesgo.",
+  immediateSteps: [
+    "Revisar manualmente las señales críticas detectadas.",
+    "Validar el contexto financiero del cliente.",
+    "Controlar alertas y eventos recientes.",
   ],
-  expected_impact: "Mitigación manual temporal.",
-  risk_reduction_estimate: 5,
-  suggested_message: "Se recomienda revisión manual de los riesgos detectados.",
+  expectedImpact: "Mitigación manual temporal del riesgo.",
+  riskReductionEstimate: 5,
+  suggestedMessage:
+    "Se recomienda una revisión manual de los riesgos detectados.",
 };
 
 export async function generateMitigationPlan(
   input: AIPlanInput,
 ): Promise<AIActionPlan> {
   const apiKey = process.env.OPENAI_API_KEY;
+
   if (!apiKey) {
     return OFFLINE_PLAN;
   }
+
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini", // Modelo permitido
-        response_format: { type: "json_object" },
-        messages: [
-          {
-            role: "system",
-            content: `Eres Chief Risk Officer. Devuelve SOLO un JSON válido y estricto con las siguientes claves, alineadas a risk_snapshots:
+    const response = await fetch(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          response_format: { type: "json_object" },
+          temperature: 0.5,
+          messages: [
+            {
+              role: "system",
+              content: `Eres Chief Risk Officer.
+Devuelve EXCLUSIVAMENTE un JSON válido con la siguiente estructura exacta:
+
 {
   "rationale": "Explicación breve del riesgo detectado",
-  "immediate_steps": ["Paso 1", "Paso 2", "Paso 3"],
-  "expected_impact": "Impacto esperado",
-  "risk_reduction_estimate": número entre 1 y 100,
-  "suggested_message": "Mensaje breve para el cliente"
+  "immediateSteps": ["Paso 1", "Paso 2", "Paso 3"],
+  "expectedImpact": "Impacto esperado",
+  "riskReductionEstimate": número entre 1 y 100,
+  "suggestedMessage": "Mensaje breve para el cliente"
 }`,
-          },
-          {
-            role: "user",
-            content: JSON.stringify({
-              global_score: input.globalScore,
-              signals: input.signals,
-              financial_context: input.financialContext,
-              scenario_description: input.scenarioDescription,
-              recommendation_text: input.recommendationText,
-            }),
-          },
-        ],
-        temperature: 0.5,
-      }),
-      signal: AbortSignal.timeout(6000),
-    });
+            },
+            {
+              role: "user",
+              content: JSON.stringify({
+                globalScore: input.globalScore,
+                signals: input.signals,
+                financialContext: input.financialContext,
+                scenarioDescription: input.scenarioDescription,
+                recommendationText: input.recommendationText,
+              }),
+            },
+          ],
+        }),
+        { signal: AbortSignal.timeout(6000) },
+      },
+    );
+
     if (!response.ok) {
       return OFFLINE_PLAN;
     }
+
     const data = await response.json();
-    const content = data.choices?.[0]?.message?.content;
-    if (!content) return OFFLINE_PLAN;
+    const content = data?.choices?.[0]?.message?.content;
+
+    if (!content) {
+      return OFFLINE_PLAN;
+    }
+
     return JSON.parse(content) as AIActionPlan;
   } catch {
     return OFFLINE_PLAN;
   }
 }
+
