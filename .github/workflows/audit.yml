@@ -1,4 +1,4 @@
-name: Full Code Audit
+name: Full Audit Report
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
 jobs:
   audit:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -21,24 +22,104 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Create reports folder
+        run: mkdir -p audit-reports
+
+      # -----------------------
+      # TypeScript Check
+      # -----------------------
       - name: TypeScript Check
-        run: npx tsc --noEmit
-
-      - name: ESLint Check
-        run: npx eslint 'src/**/*.{ts,tsx}' --max-warnings=0 || true
-
-      - name: Prettier Check
-        run: npx prettier --check "src/**/*.{ts,tsx,js,jsx,json,css,md}" || true
-
-      - name: NPM Audit
-        run: npm audit --audit-level=moderate || true
-
-      - name: Save audit reports
+        id: tsc
         run: |
-          mkdir -p audit-reports
+          npx tsc --noEmit --pretty false > audit-reports/tsc-report.txt || true
+
+      # -----------------------
+      # ESLint Check
+      # -----------------------
+      - name: ESLint Check
+        id: eslint
+        run: |
           npx eslint 'src/**/*.{ts,tsx}' -f json -o audit-reports/eslint-report.json || true
-          npx prettier --check "src/**/*.{ts,tsx,js,jsx,json,css,md}" --loglevel silent || true
-          npm audit --json > audit-reports/npm-audit.json || true
+
+      - name: Convert ESLint JSON to Markdown
+        run: |
+          node -e "
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('audit-reports/eslint-report.json', 'utf-8'));
+          let md = '## ESLint Report\n\n';
+          if (!data.length) { md += 'No ESLint issues detected.\n'; } 
+          else {
+            data.forEach(file => {
+              if (file.messages.length) {
+                md += `### ${file.filePath}\n`;
+                file.messages.forEach(msg => {
+                  md += `- [${msg.ruleId}] ${msg.message} (line ${msg.line}, col ${msg.column})\n`;
+                });
+                md += '\n';
+              }
+            });
+          }
+          fs.writeFileSync('audit-reports/eslint-report.md', md);
+          "
+
+      # -----------------------
+      # Prettier Check
+      # -----------------------
+      - name: Prettier Check
+        id: prettier
+        run: |
+          npx prettier --check "src/**/*.{ts,tsx,js,jsx,json,css,md}" > audit-reports/prettier-report.txt || true
+
+      # -----------------------
+      # NPM Audit
+      # -----------------------
+      - name: NPM Audit
+        id: npm-audit
+        run: npm audit --json > audit-reports/npm-audit.json || true
+
+      - name: Convert NPM Audit to Markdown
+        run: |
+          node -e "
+          const fs = require('fs');
+          const audit = JSON.parse(fs.readFileSync('audit-reports/npm-audit.json', 'utf-8'));
+          let md = '## NPM Audit Report\n\n';
+          if (!audit.advisories || Object.keys(audit.advisories).length === 0) {
+            md += 'No vulnerabilities found.\n';
+          } else {
+            Object.values(audit.advisories).forEach(item => {
+              md += `- [${item.severity}] ${item.module_name}: ${item.title} (Patched in ${item.patched_versions})\n`;
+            });
+          }
+          fs.writeFileSync('audit-reports/npm-audit-report.md', md);
+          "
+
+      # -----------------------
+      # CodeQL Security Scan
+      # -----------------------
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
+
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+      # -----------------------
+      # Aggregate Markdown Report
+      # -----------------------
+      - name: Generate Full Audit Report
+        run: |
+          echo "# SmartDash Full Audit Report" > audit-reports/audit-report.md
+          echo "" >> audit-reports/audit-report.md
+          echo "## TypeScript Report" >> audit-reports/audit-report.md
+          cat audit-reports/tsc-report.txt >> audit-reports/audit-report.md
+          echo "" >> audit-reports/audit-report.md
+          cat audit-reports/eslint-report.md >> audit-reports/audit-report.md
+          echo "" >> audit-reports/audit-report.md
+          echo "## Prettier Report" >> audit-reports/audit-report.md
+          cat audit-reports/prettier-report.txt >> audit-reports/audit-report.md
+          echo "" >> audit-reports/audit-report.md
+          cat audit-reports/npm-audit-report.md >> audit-reports/audit-report.md
 
       - name: CodeQL Security Scan
         uses: github/codeql-action/init@v2
