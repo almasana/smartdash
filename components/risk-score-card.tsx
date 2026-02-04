@@ -17,6 +17,10 @@ type RiskVisualConfig = {
   label: string;
 };
 
+/**
+ * 🎯 Mapeo de score → tokens semánticos
+ * El theme controla los colores reales
+ */
 function getRiskVisualConfig(score: number): RiskVisualConfig {
   if (score >= 80)
     return {
@@ -49,9 +53,15 @@ function getRiskVisualConfig(score: number): RiskVisualConfig {
     label: "Bajo",
   };
 }
-export function RiskScoreCard({ score, impact, evaluation }: RiskScoreCardProps) {
+
+export function RiskScoreCard({
+  score,
+  impact,
+  evaluation,
+}: RiskScoreCardProps) {
   const config = getRiskVisualConfig(score);
 
+  // Gauge math (estable y predecible)
   const radius = 85;
   const strokeWidth = 12;
   const center = 100;
@@ -70,22 +80,34 @@ export function RiskScoreCard({ score, impact, evaluation }: RiskScoreCardProps)
         <div className="relative w-64 h-32 flex-shrink-0">
           <svg viewBox="0 0 200 110" className="w-full h-full">
             <defs>
-              <linearGradient id="riskGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <linearGradient
+                id="riskGradient"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="0%"
+              >
                 <stop offset="0%" stopColor={config.gradientFrom} />
                 <stop offset="100%" stopColor={config.gradientTo} />
               </linearGradient>
             </defs>
 
+            {/* Track */}
             <path
-              d={`M ${center - radius} ${center} A ${radius} ${radius} 0 0 1 ${center + radius} ${center}`}
+              d={`M ${center - radius} ${center} A ${radius} ${radius} 0 0 1 ${
+                center + radius
+              } ${center}`}
               fill="none"
               stroke="hsl(var(--muted))"
               strokeWidth={strokeWidth}
               strokeLinecap="round"
             />
 
+            {/* Progress */}
             <path
-              d={`M ${center - radius} ${center} A ${radius} ${radius} 0 0 1 ${center + radius} ${center}`}
+              d={`M ${center - radius} ${center} A ${radius} ${radius} 0 0 1 ${
+                center + radius
+              } ${center}`}
               fill="none"
               stroke="url(#riskGradient)"
               strokeWidth={strokeWidth}
@@ -95,6 +117,7 @@ export function RiskScoreCard({ score, impact, evaluation }: RiskScoreCardProps)
               className="transition-all duration-700 ease-out"
             />
 
+            {/* Needle */}
             <circle
               cx={needleX}
               cy={needleY}
@@ -106,6 +129,7 @@ export function RiskScoreCard({ score, impact, evaluation }: RiskScoreCardProps)
             />
           </svg>
 
+          {/* Center text */}
           <div className="absolute inset-0 top-6 flex flex-col items-center justify-end text-center">
             <span className="text-5xl font-bold tracking-tight text-foreground">
               {score.toFixed(1)}
@@ -119,10 +143,17 @@ export function RiskScoreCard({ score, impact, evaluation }: RiskScoreCardProps)
         {/* Content */}
         <div className="flex-1 space-y-5 text-center md:text-left">
           <div className="flex items-center justify-center md:justify-start gap-3">
-            <Badge className={cn("px-4 py-1.5 rounded-full font-semibold", config.badgeClass)}>
+            <Badge
+              className={cn(
+                "px-4 py-1.5 rounded-full font-semibold",
+                config.badgeClass
+              )}
+            >
               ● {config.label}
             </Badge>
-            <span className="text-xs text-muted-foreground">Actualizado ahora</span>
+            <span className="text-xs text-muted-foreground">
+              Actualizado ahora
+            </span>
           </div>
 
           <div>
@@ -145,3 +176,4 @@ export function RiskScoreCard({ score, impact, evaluation }: RiskScoreCardProps)
     </Card>
   );
 }
+
