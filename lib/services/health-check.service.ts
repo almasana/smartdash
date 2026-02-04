@@ -11,7 +11,7 @@ export interface HealthStatus {
 
 /**
  * Verifica la salud de los servicios críticos de infraestructura.
- * No valida lógica de negocio ni existencia de datos de demo.
+ * No valida lógica de negocio ni contenido de datos.
  */
 export async function checkRiskDataHealth(): Promise<HealthStatus[]> {
   const status: HealthStatus[] = [];
@@ -26,14 +26,14 @@ export async function checkRiskDataHealth(): Promise<HealthStatus[]> {
       healthy: true,
       issues: [],
     });
-  } catch (error) {
+  } catch {
     status.push({
       service: "Database",
       healthy: false,
       issues: ["No se pudo conectar a la base de datos"],
     });
 
-    // Si no hay DB, no tiene sentido seguir
+    // Sin DB no tiene sentido continuar
     return status;
   }
 
@@ -56,22 +56,22 @@ export async function checkRiskDataHealth(): Promise<HealthStatus[]> {
   }
 
   /* ------------------------------------------------------------------
-   * Check 3: Base table write access
+   * Check 3: Base table accessibility
    * ------------------------------------------------------------------ */
   try {
     await sql`
-      SELECT estado_accion
+      SELECT action_status
       FROM capturas_riesgo
       LIMIT 1
     `;
     status.push({
-      service: "Risk Snapshots Table",
+      service: "Risk Snapshots Table (capturas_riesgo)",
       healthy: true,
       issues: [],
     });
   } catch {
     status.push({
-      service: "Risk Snapshots Table",
+      service: "Risk Snapshots Table (capturas_riesgo)",
       healthy: false,
       issues: ["No se puede acceder a capturas_riesgo"],
     });
