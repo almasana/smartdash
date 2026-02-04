@@ -1,0 +1,47 @@
+name: Full Code Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript Check
+        run: npx tsc --noEmit
+
+      - name: ESLint Check
+        run: npx eslint 'src/**/*.{ts,tsx}' --max-warnings=0 || true
+
+      - name: Prettier Check
+        run: npx prettier --check "src/**/*.{ts,tsx,js,jsx,json,css,md}" || true
+
+      - name: NPM Audit
+        run: npm audit --audit-level=moderate || true
+
+      - name: Save audit reports
+        run: |
+          mkdir -p audit-reports
+          npx eslint 'src/**/*.{ts,tsx}' -f json -o audit-reports/eslint-report.json || true
+          npx prettier --check "src/**/*.{ts,tsx,js,jsx,json,css,md}" --loglevel silent || true
+          npm audit --json > audit-reports/npm-audit.json || true
+
+      - name: CodeQL Security Scan
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
+      - run: github/codeql-action/analyze@v2
