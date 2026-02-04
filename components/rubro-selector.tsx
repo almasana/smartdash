@@ -1,73 +1,102 @@
 "use client";
 
 import Link from "next/link";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
 import { Store, ShoppingCart, Video, Rocket } from "lucide-react";
 
-export function RubroSelector() {
-  const rubros = [
-    {
-      id: "Pyme",
-      label: "PYME / Local",
-      desc: "Logística, RRHH y flujo de caja minorista.",
-      icon: Store,
-      color: "text-blue-600",
-      bg: "hover:border-blue-400 hover:bg-blue-50/50"
-    },
-    {
-      id: "E-commerce",
-      label: "E-commerce",
-      desc: "Stock, pasarelas de pago y experiencia de usuario.",
-      icon: ShoppingCart,
-      color: "text-purple-600",
-      bg: "hover:border-purple-400 hover:bg-purple-50/50"
-    },
-    {
-      id: "Creator",
-      label: "Creadores",
-      desc: "Reputación, algoritmos y gestión de contratos.",
-      icon: Video,
-      color: "text-pink-600",
-      bg: "hover:border-pink-400 hover:bg-pink-50/50"
-    },
-    {
-      id: "Startups",
-      label: "Startups",
-      desc: "Runway, métricas SaaS y crecimiento acelerado.",
-      icon: Rocket,
-      color: "text-orange-600",
-      bg: "hover:border-orange-400 hover:bg-orange-50/50"
-    }
-  ];
+type RubroConfig = {
+  id: string;
+  label: string;
+  description: string;
+  icon: any;
+  iconClass: string;
+  hoverClass: string;
+};
 
+const RUBROS: RubroConfig[] = [
+  {
+    id: "Pyme",
+    label: "PYME / Local",
+    description: "Logística, RRHH y flujo de caja minorista.",
+    icon: Store,
+    iconClass: "text-primary",
+    hoverClass: "hover:border-primary/40 hover:bg-primary/5",
+  },
+  {
+    id: "E-commerce",
+    label: "E-commerce",
+    description: "Stock, pasarelas de pago y experiencia de usuario.",
+    icon: ShoppingCart,
+    iconClass: "text-accent-foreground",
+    hoverClass: "hover:border-accent/40 hover:bg-accent/10",
+  },
+  {
+    id: "Creadores",
+    label: "Creadores",
+    description: "Reputación, algoritmos y gestión de contratos.",
+    icon: Video,
+    iconClass: "text-secondary-foreground",
+    hoverClass: "hover:border-secondary/40 hover:bg-secondary/40",
+  },
+  {
+    id: "Startups",
+    label: "Startups",
+    description: "Runway, métricas SaaS y crecimiento acelerado.",
+    icon: Rocket,
+    iconClass: "text-primary",
+    hoverClass: "hover:border-primary/40 hover:bg-primary/10",
+  },
+];
+
+export function RubroSelector() {
   return (
-    <div className="max-w-6xl mx-auto py-16 px-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      <div className="text-center mb-16">
-        <h1 className="text-5xl font-black text-slate-900 tracking-tight mb-4">
-          SmartDash <span className="text-orange-600">FV</span>
+    <div className="mx-auto max-w-6xl px-6 py-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Header */}
+      <div className="mb-16 text-center">
+        <h1 className="mb-4 text-5xl font-black tracking-tight text-foreground">
+          SmartDash <span className="text-primary">FV</span>
         </h1>
-        <p className="text-xl text-slate-500 font-medium max-w-2xl mx-auto">
-          Selecciona un rubro para verificar los riesgos activos detectados por la Fuente de la Verdad.
+        <p className="mx-auto max-w-2xl text-xl font-medium text-muted-foreground">
+          Selecciona un rubro para verificar los riesgos activos detectados por la
+          Fuente de la Verdad.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {rubros.map((rubro) => {
+      {/* Grid */}
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        {RUBROS.map((rubro) => {
           const Icon = rubro.icon;
+
           return (
-            <Link key={rubro.id} href={`/?rubro=${rubro.id}`} className="group block">
-              <Card className={`h-full border-2 border-slate-100 transition-all duration-300 shadow-sm group-hover:shadow-xl group-hover:-translate-y-1 ${rubro.bg}`}>
+            <Link
+              key={rubro.id}
+              href={`/?rubro=${rubro.id}`}
+              className="group block"
+            >
+              <Card
+                className={`h-full border border-border bg-card transition-all duration-300
+                shadow-sm hover:-translate-y-1 hover:shadow-lg ${rubro.hoverClass}`}
+              >
                 <CardHeader className="flex flex-row items-center gap-5 pb-2">
-                  <div className={`p-4 rounded-2xl bg-white shadow-sm border border-slate-50 ${rubro.color} group-hover:scale-110 transition-transform`}>
+                  <div
+                    className={`rounded-2xl border border-border bg-background p-4 shadow-sm transition-transform group-hover:scale-110 ${rubro.iconClass}`}
+                  >
                     <Icon size={32} />
                   </div>
-                  <CardTitle className="text-2xl font-bold text-slate-800">
+                  <CardTitle className="text-2xl font-bold text-foreground">
                     {rubro.label}
                   </CardTitle>
                 </CardHeader>
+
                 <CardContent>
-                  <CardDescription className="text-base text-slate-500 font-medium">
-                    {rubro.desc}
+                  <CardDescription className="text-base font-medium text-muted-foreground">
+                    {rubro.description}
                   </CardDescription>
                 </CardContent>
               </Card>
