@@ -1,12 +1,20 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import './globals.css';
+import { ThemeProvider } from '@/ui/theme-provider';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="es" className="h-full dark">
-      <body className="h-full bg-[oklch(0.145_0_0)]">
-        {children}
+    <html lang="es" suppressHydrationWarning>
+      <body className="h-full bg-background text-foreground">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
 }
+
