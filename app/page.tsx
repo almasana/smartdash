@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import HeroSection from "@/components/landing/HeroSection";
+import VigilantSection from "@/components/landing/VigilantSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Shield,
@@ -158,32 +159,8 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-24 bg-slate-900 text-white">
-          <div className="max-w-7xl mx-auto px-4 text-center space-y-10">
-            <h2 className="text-4xl lg:text-6xl font-bold tracking-tight">
-              SmartDash es el empleado que nunca falta, nunca se equivoca y no cobra sueldo
-            </h2>
-            <p className="text-xl text-slate-300 max-w-4xl mx-auto leading-relaxed">
-              Vigila tus números 24/7, te avisa solo cuando hay peligro y te ahorra miles todos los meses.
-              <br />
-              Vos seguís creciendo. Él protege tu plata.
-            </p>
-
-            <Link href="/dashboard">
-              <Button
-                size="lg"
-                className="bg-[#FF5733] hover:bg-[#FF5733]/90 h-16 px-10 rounded-xl text-xl font-bold group border-none shadow-xl"
-              >
-                Probá 30 días GRATIS ahora (sin tarjeta)
-                <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
-              </Button>
-            </Link>
-
-            <p className="text-sm text-slate-400">
-              Cancelá cuando quieras • Sin compromiso • Empezás hoy
-            </p>
-          </div>
-        </section>
+        {/* Insertar la nueva sección aquí */}
+        <VigilantSection />
 
         <section className="py-24 bg-slate-50">
           <div className="max-w-3xl mx-auto px-4">

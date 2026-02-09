@@ -1,3 +1,4 @@
+// components/clientes-grid.tsx
 "use client";
 
 import Image from "next/image";
@@ -6,41 +7,41 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { Building2, User } from "lucide-react";
+import { Building2, User, ArrowRight } from "lucide-react";
 import type { ClienteCard } from "@/lib/types/welcome";
 
-// Tokens de color por segmento
+// Tokens de color por segmento - Actualizados a gama Azul/Índigo
 const SEGMENTO_TOKENS: Record<
   string,
   { bg: string; bgLight: string; text: string; border: string; badge: string }
 > = {
   Pyme: {
-    bg: "bg-emerald-500",
-    bgLight: "bg-emerald-50",
-    text: "text-emerald-600",
-    border: "border-emerald-100",
-    badge: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    bg: "bg-[#1e3a8a]",
+    bgLight: "bg-[#1e3a8a]/10",
+    text: "text-[#1e3a8a]",
+    border: "border-[#1e3a8a]/20",
+    badge: "bg-[#1e3a8a]/10 text-[#1e3a8a] border-[#1e3a8a]/30",
   },
   "E-commerce": {
-    bg: "bg-orange-500",
-    bgLight: "bg-orange-50",
-    text: "text-orange-600",
-    border: "border-orange-100",
-    badge: "bg-orange-100 text-orange-700 border-orange-200",
+    bg: "bg-[#3b82f6]",
+    bgLight: "bg-[#3b82f6]/10",
+    text: "text-[#3b82f6]",
+    border: "border-[#3b82f6]/20",
+    badge: "bg-[#3b82f6]/10 text-[#3b82f6] border-[#3b82f6]/30",
   },
   Startup: {
-    bg: "bg-purple-500",
-    bgLight: "bg-purple-50",
-    text: "text-purple-600",
-    border: "border-purple-100",
-    badge: "bg-purple-100 text-purple-700 border-purple-200",
+    bg: "bg-[#4f46e5]",
+    bgLight: "bg-[#4f46e5]/10",
+    text: "text-[#4f46e5]",
+    border: "border-[#4f46e5]/20",
+    badge: "bg-[#4f46e5]/10 text-[#4f46e5] border-[#4f46e5]/30",
   },
   Creador: {
-    bg: "bg-blue-500",
-    bgLight: "bg-blue-50",
-    text: "text-blue-600",
-    border: "border-blue-100",
-    badge: "bg-blue-100 text-blue-700 border-blue-200",
+    bg: "bg-[#6366f1]",
+    bgLight: "bg-[#6366f1]/10",
+    text: "text-[#6366f1]",
+    border: "border-[#6366f1]/20",
+    badge: "bg-[#6366f1]/10 text-[#6366f1] border-[#6366f1]/30",
   },
 };
 
@@ -58,27 +59,27 @@ export function ClienteCardUI({ cliente, onClick }: ClienteCardProps) {
   // Formatear metadata de negocio de forma consistente
   const metadata = cliente.metadata_negocio
     ? [
-        cliente.metadata_negocio.empleados
-          ? `Empleados: ${cliente.metadata_negocio.empleados}`
-          : null,
-        cliente.metadata_negocio.industria
-          ? `Industria: ${cliente.metadata_negocio.industria}`
-          : null,
-        cliente.metadata_negocio.ubicacion
-          ? `Ubicación: ${cliente.metadata_negocio.ubicacion}`
-          : null,
-        cliente.metadata_negocio.anio_fundacion
-          ? `Fundado: ${cliente.metadata_negocio.anio_fundacion}`
-          : null,
-      ]
-        .filter(Boolean)
-        .join(" • ")
+      cliente.metadata_negocio.empleados
+        ? `Empleados: ${cliente.metadata_negocio.empleados}`
+        : null,
+      cliente.metadata_negocio.industria
+        ? `Industria: ${cliente.metadata_negocio.industria}`
+        : null,
+      cliente.metadata_negocio.ubicacion
+        ? `Ubicación: ${cliente.metadata_negocio.ubicacion}`
+        : null,
+      cliente.metadata_negocio.anio_fundacion
+        ? `Fundado: ${cliente.metadata_negocio.anio_fundacion}`
+        : null,
+    ]
+      .filter(Boolean)
+      .join(" • ")
     : null;
 
   const CardContent = (
     <Card
       className={cn(
-        "relative overflow-hidden rounded-3xl border-2 transition-all duration-300 bg-white shadow-lg hover:shadow-2xl hover:scale-[1.02] cursor-pointer group",
+        "relative overflow-hidden rounded-3xl border-2 transition-all duration-300 bg-white shadow-md hover:shadow-xl hover:-translate-y-1 hover:border-[#4f46e5] cursor-pointer group",
         token.border,
       )}
       onClick={onClick}
@@ -120,6 +121,10 @@ export function ClienteCardUI({ cliente, onClick }: ClienteCardProps) {
         >
           {cliente.segmento}
         </Badge>
+        <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-2 text-[#4f46e5] text-sm font-semibold">
+          Ver Detalles
+          <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+        </div>
       </div>
     </Card>
   );

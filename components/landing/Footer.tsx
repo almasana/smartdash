@@ -71,7 +71,7 @@ export default function Footer() {
               {/* Asumiendo que tenés una versión blanca del logo, si no, se puede usar filtro o el mismo si contrasta */}
               <div className="bg-white/10 p-1 rounded-lg">
                 <Image
-                  src="/cerebrain.jpg"
+                  src="/isologo.png"
                   alt="SmartDash Logo"
                   width={64}
                   height={64}

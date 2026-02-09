@@ -155,7 +155,7 @@ export default function ComparisonSection() {
         </div>
 
         {/* ROI + CTA fuerte */}
-        <div className="mt-16 p-10 rounded-2xl bg-slate-900 text-white text-center shadow-2xl">
+        <div className="mt-16 p-6 sm:p-10 rounded-2xl bg-slate-900 text-white text-center shadow-2xl">
           <h3 className="text-3xl lg:text-4xl font-bold mb-6">
             Pagás una miseria y evitás perder miles todos los meses
           </h3>
@@ -190,15 +190,25 @@ export default function ComparisonSection() {
           <Link href="/dashboard">
             <Button
               size="lg"
-              className="bg-[#FF5733] hover:bg-[#FF5733]/90 h-16 px-12 rounded-xl text-xl font-bold group text-white shadow-lg shadow-orange-500/20"
+              className="
+                bg-[#FF5733] hover:bg-[#FF5733]/90 
+                h-auto min-h-[4rem] py-4 px-6 sm:px-12 
+                rounded-xl 
+                text-lg sm:text-xl font-bold 
+                group text-white 
+                shadow-lg shadow-orange-500/20 
+                whitespace-normal text-center leading-tight
+              "
             >
-              Probá 30 días GRATIS ahora (sin tarjeta)
-              <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
+              <span className="flex items-center justify-center gap-2 flex-wrap sm:flex-nowrap">
+                Probá 30 días GRATIS ahora (sin tarjeta)
+                <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform shrink-0" />
+              </span>
             </Button>
           </Link>
 
           <p className="text-sm text-slate-500 mt-6">
-            Sin tarjeta • Cancelá cuando quieras • Empezás hoy
+            Sin tarjeta de crédito • Cancelá cuando quieras • Empezás hoy
           </p>
         </div>
       </div>

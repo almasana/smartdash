@@ -6,7 +6,7 @@ import { ArrowRight, DollarSign, MessageCircle, Brain } from "lucide-react";
 
 export default function HeroSection() {
     return (
-        <section className="relative py-16 lg:py-24 overflow-hidden bg-[#002D5E] text-white">
+        <section className="relative py-16 lg:py-24 overflow-hidden bg-gradient-to-br from-[#002D5E] via-[#0F3F7A] to-[#1E3A8A] text-white">
             <div className="max-w-7xl mx-auto px-4 lg:px-8">
                 <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
                     {/* Columna de Texto */}

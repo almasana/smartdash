@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Shield, Eye, Zap, TrendingDown } from "lucide-react";
+import { ArrowRight, AlertTriangle, CheckCircle, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function HeroWelcome() {
@@ -9,123 +9,85 @@ export function HeroWelcome() {
     <div className="min-h-screen bg-slate-950 text-white overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-orange-500/20 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[100px] animate-pulse delay-1000" />
+        {/* Rejilla intacta */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear_gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+        {/* Orbes de luz actualizados a Azul/Indigo */}
+        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[100px] animate-pulse delay-1000" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-slate-800/50 rounded-full blur-[150px]" />
       </div>
 
       <div className="relative z-10 min-h-screen flex flex-col">
-        <header className="w-full py-6 px-8">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/25">
-                <Shield size={20} className="text-white" />
-              </div>
-              <span className="text-xl font-black tracking-tight">
-                SmartDash <span className="text-orange-500">FV</span>
-              </span>
-            </div>
-
-            <nav className="hidden md:flex items-center gap-8">
-              <a
-                href="#features"
-                className="text-sm text-slate-400 hover:text-white transition-colors font-medium"
-              >
-                Características
-              </a>
-              <a
-                href="#demo"
-                className="text-sm text-slate-400 hover:text-white transition-colors font-medium"
-              >
-                Demo
-              </a>
-            </nav>
-          </div>
-        </header>
-
         <main className="flex-1 flex items-center justify-center px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 text-orange-400 text-xs font-bold uppercase tracking-widest mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-              <Eye size={14} />
-              Motor de Detección de Riesgos
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            {/* Columna Izquierda: Propuesta de Valor + CTA + Barra de Confianza */}
+            <div className="text-left animate-in fade-in slide-in-from-left-4 duration-700">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tighter leading-[0.9] mb-6">
+                Tu empresa está perdiendo dinero y no sabes dónde.
+              </h1>
+              <p className="text-xl md:text-2xl text-slate-300 font-medium leading-relaxed max-w-xl mb-8">
+                Detecta riesgos operativos y legales a tiempo con nuestro motor de inteligencia predictiva.
+              </p>
+              <div className="mb-8">
+                <Link
+                  href="/dashboard#clientes-section"
+                  className={cn(
+                    "inline-flex items-center gap-3 px-8 py-5 rounded-2xl",
+                    "bg-gradient-to-r from-[#1e3a8a] to-[#4f46e5]",
+                    "text-white text-lg font-black uppercase tracking-wider",
+                    "shadow-2xl shadow-indigo-500/50",
+                    "hover:shadow-indigo-500/70 hover:scale-105",
+                    "transition-all duration-300 group"
+                  )}
+                >
+                  Detectar Riesgos Ahora
+                  <ArrowRight
+                    size={20}
+                    className="group-hover:translate-x-1 transition-transform"
+                  />
+                </Link>
+                <p className="text-sm text-slate-400 mt-3">Sin tarjeta requerida</p>
+              </div>
+              {/* Barra de Confianza */}
+              <div className="flex items-center gap-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-6 py-3">
+                <div className="flex items-center gap-2">
+                  <Users size={18} className="text-indigo-400" />
+                  <span className="text-sm font-bold text-white">+500</span>
+                  <span className="text-sm text-slate-400">Empresas monitoreadas</span>
+                </div>
+              </div>
             </div>
 
-            <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tighter leading-[0.9] mb-8 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
-              Bienvenido a{" "}
-              <span className="bg-gradient-to-r from-orange-400 via-amber-500 to-orange-600 bg-clip-text text-transparent">
-                SmartDash FV
-              </span>
-            </h1>
-
-            <p className="text-xl md:text-2xl text-slate-400 font-medium leading-relaxed max-w-2xl mx-auto mb-12 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-              Aquí podrás{" "}
-              <span className="text-white font-bold">ver tus riesgos</span>,{" "}
-              <span className="text-white font-bold">conocer sus causas</span> y{" "}
-              <span className="text-orange-400 font-bold">
-                actuar antes de perder dinero
-              </span>
-              .
-            </p>
-
-            <div className="animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
-              <Link
-                href="/dashboard#clientes-section"
-                className={cn(
-                  "inline-flex items-center gap-3 px-8 py-5 rounded-2xl",
-                  "bg-gradient-to-r from-orange-500 to-amber-600",
-                  "text-white text-lg font-black uppercase tracking-wider",
-                  "shadow-2xl shadow-orange-500/30",
-                  "hover:shadow-orange-500/50 hover:scale-105",
-                  "transition-all duration-300 group",
-                )}
-              >
-                Ir al Demo
-                <ArrowRight
-                  size={20}
-                  className="group-hover:translate-x-1 transition-transform"
-                />
-              </Link>
+            {/* Columna Derecha: Elemento Visual Potente con Glassmorphism Inclinado */}
+            <div className="relative perspective-1000 animate-in fade-in slide-in-from-right-4 duration-700 delay-200">
+              <div className="transform rotate-y-[-15deg] rotate-x-[10deg] origin-center">
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-2xl shadow-indigo-500/30">
+                  {/* Simulación de Captura de Dashboard */}
+                  <div className="bg-slate-900/50 rounded-xl p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-bold text-white">Alerta Crítica Resuelta</h3>
+                      <CheckCircle size={24} className="text-emerald-400" />
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-red-400">
+                        <AlertTriangle size={16} />
+                        <span>Riesgo Detectado: Fraude en Transacciones</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-emerald-400">
+                        <CheckCircle size={16} />
+                        <span>Acción Tomada: Bloqueo Automático</span>
+                      </div>
+                      <div className="text-slate-400 text-sm">
+                        Pérdidas Evitadas: $45,000
+                      </div>
+                    </div>
+                    <div className="mt-4 h-24 bg-gradient-to-r from-[#1e3a8a] to-[#4f46e5] rounded-lg opacity-50" /> {/* Simulación de Gráfico */}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </main>
-
-        <section id="features" className="w-full py-16 px-6">
-          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-400">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center mb-4">
-                <Eye size={24} className="text-emerald-400" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">Ver</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">
-                Visualiza todos tus riesgos en tiempo real, organizados por
-                segmento y prioridad.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-500">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center mb-4">
-                <Zap size={24} className="text-blue-400" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">Entender</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">
-                Conoce las causas de cada riesgo con análisis detallado y
-                señales claras.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-700">
-              <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center mb-4">
-                <TrendingDown size={24} className="text-orange-400" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">Actuar</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">
-                Toma decisiones informadas y mitiga riesgos antes de perder
-                dinero.
-              </p>
-            </div>
-          </div>
-        </section>
 
         <footer className="w-full py-6 px-8 border-t border-white/5">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
