@@ -27,14 +27,13 @@ export default function ClientePage() {
         if (!res.ok) throw new Error("Error al obtener casos");
 
         const body = (await res.json()) as { casos?: CasoTestigoCardUI[] };
-        // Filtramos casos válidos
         const valid = (body.casos || []).filter((item) => item.captura_id);
 
         if (!cancelled) {
           setCasos(valid);
           if (valid.length > 0) {
-            // Extraemos metadatos del cliente del primer caso encontrado
-            const firstData = valid[0] as any; // Usamos 'any' para acceder a props extra si la interfaz no está actualizada
+            // Extraemos datos del cliente del primer caso
+            const firstData = valid[0] as any;
             setClienteNombre(firstData.cliente_nombre_comercial || "");
             setClienteLogo(firstData.logo_url || null);
             setNacionalidad(firstData.nacionalidad || null);
@@ -59,7 +58,6 @@ export default function ClientePage() {
     };
   }, [clienteId]);
 
-  // Cálculo del Puntaje Global promedio
   const puntajeGlobalCliente = useMemo(() => {
     if (casos.length === 0) return null;
     const puntajes = casos.map((c) => c.puntaje_global ?? 0).filter((p) => p > 0);
@@ -67,7 +65,6 @@ export default function ClientePage() {
     return Math.round(puntajes.reduce((a, b) => a + b, 0) / puntajes.length);
   }, [casos]);
 
-  // Determinación del Nivel de Riesgo Global para el color del anillo
   const riesgoGlobal = useMemo(() => {
     if (puntajeGlobalCliente === null) return "Medio";
     if (puntajeGlobalCliente >= 90) return "Crítico";
@@ -90,7 +87,7 @@ export default function ClientePage() {
         {/* Header de Expediente */}
         <div className="bg-white border border-indigo-100 rounded-2xl shadow-sm p-6 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-4">
-            <div className="relative h-16 w-16 rounded-full overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center">
+            <div className="relative h-16 w-16 rounded-full overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center shrink-0">
               {clienteLogo ? (
                 <Image
                   src={clienteLogo}
@@ -106,15 +103,15 @@ export default function ClientePage() {
               )}
             </div>
             <div>
-              <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">
                 Informe de Auditoría Forense
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-slate-900 flex flex-wrap items-center gap-3">
                 {segmento || "Cliente"}
 
-                {/* Badge de Nacionalidad Incorporado */}
+                {/* Aquí incorporamos la Nacionalidad */}
                 {nacionalidad && (
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-md">
+                  <span className="text-sm font-bold uppercase tracking-wider text-slate-500 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200 align-middle">
                     {nacionalidad}
                   </span>
                 )}
@@ -124,7 +121,7 @@ export default function ClientePage() {
 
           {/* Anillo de Puntaje Global */}
           {puntajeGlobalCliente !== null && (
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center shrink-0">
               <div className="relative w-24 h-24">
                 <svg className="w-full h-full" viewBox="0 0 100 100">
                   <circle

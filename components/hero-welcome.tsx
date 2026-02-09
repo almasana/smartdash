@@ -10,7 +10,7 @@ export function HeroWelcome() {
       {/* Background Effects */}
       <div className="absolute inset-0">
         {/* Rejilla intacta */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear_gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
         {/* Orbes de luz actualizados a Azul/Indigo */}
         <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[120px] animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[100px] animate-pulse delay-1000" />
@@ -81,7 +81,13 @@ export function HeroWelcome() {
                         Pérdidas Evitadas: $45,000
                       </div>
                     </div>
-                    <div className="mt-4 h-24 bg-gradient-to-r from-[#1e3a8a] to-[#4f46e5] rounded-lg opacity-50" /> {/* Simulación de Gráfico */}
+                    {/* Bloque Azul con Leyenda */}
+                    <div className="mt-4 h-24 bg-gradient-to-r from-[#1e3a8a] to-[#4f46e5] rounded-lg flex items-center justify-center relative overflow-hidden">
+                      <div className="absolute inset-0 bg-white/5" />
+                      <p className="font-black text-white/90 text-sm tracking-widest uppercase z-10 text-center px-4">
+                        SmartDash FV • Fuente de la Verdad
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
