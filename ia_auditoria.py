@@ -1,47 +1,52 @@
 import os
 import requests
+import json
 
-def test_secrets():
-    print("🔍 Iniciando diagnóstico de configuración...")
+def ejecutar_auditoria():
+    # 1. Carga de Secrets con limpieza de espacios
+    GROQ_KEY = os.getenv('GROQ_API_KEY', '').strip()
+    SB_URL = os.getenv('NEXT_PUBLIC_SUPABASE_URL', '').strip()
+    SB_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY', '').strip()
+
+    if not all([GROQ_KEY, SB_URL, SB_KEY]):
+        print("❌ Error: Faltan llaves en los Secrets de GitHub.")
+        return
+
+    # 2. Consulta a la IA (Groq)
+    headers_groq = {"Authorization": f"Bearer {GROQ_KEY}", "Content-Type": "application/json"}
+    payload = {
+        "model": "llama-3.3-70b-versatile",
+        "messages": [{"role": "user", "content": "Generá un reporte de riesgo breve para SmartDash."}]
+    }
     
-    # Traer los secretos
-    url = os.getenv('NEXT_PUBLIC_SUPABASE_URL', '')
-    sb_key = os.getenv('SUPABASE_SERVICE_ROLE_KEY', '')
-    groq_key = os.getenv('GROQ_API_KEY', '')
+    try:
+        res = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers_groq)
+        reporte = res.json()['choices'][0]['message']['content']
+    except Exception as e:
+        print(f"❌ Error IA: {e}")
+        return
 
-    # 1. Test de URL de Supabase
-    if not url:
-        print("❌ NEXT_PUBLIC_SUPABASE_URL: No configurada.")
-    elif "\n" in url or " " in url or "%" in url:
-        print(f"❌ NEXT_PUBLIC_SUPABASE_URL: ¡Cuidado! Tiene espacios o saltos de línea invisibles.")
+    # 3. Guardar en Supabase (Usando 'resumen_cognitivo' según tu esquema)
+    headers_sb = {
+        "apikey": SB_KEY, 
+        "Authorization": f"Bearer {SB_KEY}", 
+        "Content-Type": "application/json"
+    }
+    
+    datos = {
+        "tipo_memoria": "auditoria_automatica",
+        "nivel_riesgo": "Analizado",
+        "resumen_cognitivo": reporte, # <-- Nombre exacto de tu columna
+        "url_pdf": "pendiente_generacion"
+    }
+    
+    url_tabla = f"{SB_URL}/rest/v1/ai_memoria_documental"
+    envio = requests.post(url_tabla, json=datos, headers=headers_sb)
+    
+    if envio.status_code in [200, 201]:
+        print("✅ ¡Éxito! El reporte se guardó en resumen_cognitivo.")
     else:
-        print(f"✅ NEXT_PUBLIC_SUPABASE_URL: Formato correcto ({url[:15]}...)")
-
-    # 2. Test de Supabase Key
-    if not sb_key:
-        print("❌ SUPABASE_SERVICE_ROLE_KEY: No configurada.")
-    else:
-        print(f"✅ SUPABASE_SERVICE_ROLE_KEY: Cargada (Largo: {len(sb_key)} caracteres)")
-
-    # 3. Test de Groq Key
-    if not groq_key:
-        print("❌ GROQ_API_KEY: No configurada.")
-    elif not groq_key.startswith("gsk_"):
-        print("⚠️ GROQ_API_KEY: No parece una clave de Groq válida (debería empezar con gsk_)")
-    else:
-        print("✅ GROQ_API_KEY: Formato inicial correcto.")
-
-    # 4. Prueba de conexión real a Supabase (solo ping)
-    if url and sb_key:
-        try:
-            headers = {"apikey": sb_key.strip(), "Authorization": f"Bearer {sb_key.strip()}"}
-            res = requests.get(f"{url.strip()}/rest/v1/", headers=headers)
-            if res.status_code == 200:
-                print("🚀 CONEXIÓN EXITOSA: Supabase responde correctamente.")
-            else:
-                print(f"⚠️ Supabase respondió con error {res.status_code}. Revisar la Service Role Key.")
-        except Exception as e:
-            print(f"❌ Error de conexión: {e}")
+        print(f"❌ Error Supabase: {envio.text}")
 
 if __name__ == "__main__":
-    test_secrets()
+    ejecutar_auditoria()
