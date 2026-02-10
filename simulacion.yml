@@ -1,0 +1,30 @@
+cat <<'EOF' > .github/workflows/simulacion.yml
+name: Auditoria Automatica SmartDash
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Se activa solo cada 1 hora
+  workflow_dispatch:   # Te da el botón de "Play" manual en la web
+
+jobs:
+  ejecutar-simulacion:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Bajando el codigo
+        uses: actions/checkout@v4
+
+      - name: 2. Preparando Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 3. Instalando Supabase y Groq
+        run: pip install supabase groq python-dotenv
+
+      - name: 4. 🚀 Ejecutando Auditoria de IA
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python simular_reportes.py
+EOF
