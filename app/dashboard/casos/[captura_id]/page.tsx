@@ -5,15 +5,12 @@ import { CaseSelectorHeader } from "@/components/case-selector-header";
 import { WhatsappChat } from "@/components/whatsapp-chat";
 import {
   AlertTriangle,
-  Star,
   TrendingDown,
   Clock,
   Fuel,
   DollarSign,
-  Target,
   Lightbulb,
   AlertCircle,
-  TrendingUp,
   Zap,
   Shield,
 } from "lucide-react";
@@ -39,7 +36,8 @@ function getScoreBasedGradient(score: number) {
     // Alto
     return {
       gradient: "from-orange-500 via-orange-600 to-orange-800",
-      headerBg: "bg-gradient-to-br from-orange-500/95 via-orange-600/95 to-orange-800/95",
+      headerBg:
+        "bg-gradient-to-br from-orange-500/95 via-orange-600/95 to-orange-800/95",
       accentColor: "rgb(249, 115, 22)",
       glowColor: "rgba(249, 115, 22, 0.4)",
     };
@@ -47,7 +45,8 @@ function getScoreBasedGradient(score: number) {
     // Medio
     return {
       gradient: "from-amber-400 via-amber-500 to-amber-700",
-      headerBg: "bg-gradient-to-br from-amber-400/95 via-amber-500/95 to-amber-700/95",
+      headerBg:
+        "bg-gradient-to-br from-amber-400/95 via-amber-500/95 to-amber-700/95",
       accentColor: "rgb(245, 158, 11)",
       glowColor: "rgba(245, 158, 11, 0.4)",
     };
@@ -55,7 +54,8 @@ function getScoreBasedGradient(score: number) {
     // Bajo
     return {
       gradient: "from-emerald-500 via-emerald-600 to-emerald-700",
-      headerBg: "bg-gradient-to-br from-emerald-500/95 via-emerald-600/95 to-emerald-700/95",
+      headerBg:
+        "bg-gradient-to-br from-emerald-500/95 via-emerald-600/95 to-emerald-700/95",
       accentColor: "rgb(16, 185, 129)",
       glowColor: "rgba(16, 185, 129, 0.4)",
     };
@@ -117,17 +117,16 @@ const formatCurrency = (value: number, moneda: string = "USD") =>
 const formatDate = (dateStr?: string) =>
   dateStr
     ? new Date(dateStr).toLocaleDateString("es-ES", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      })
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })
     : "N/A";
 
 // ---------------- UI COMPONENTS ----------------
 const ScoreMeter = ({ score }: { score: number }) => {
   const percentage = Math.min(100, Math.max(0, score));
-  const scoreColors = getScoreBasedGradient(score);
-  
+
   return (
     <div className="relative">
       <div className="flex items-center justify-between mb-2">
@@ -135,7 +134,8 @@ const ScoreMeter = ({ score }: { score: number }) => {
           Nivel de Riesgo
         </span>
         <span className="text-2xl font-black text-white">
-          {score}<span className="text-lg text-white/70">/100</span>
+          {score}
+          <span className="text-lg text-white/70">/100</span>
         </span>
       </div>
       <div className="relative h-3 bg-black/30 rounded-full overflow-hidden backdrop-blur-sm">
@@ -152,41 +152,43 @@ const ScoreMeter = ({ score }: { score: number }) => {
 
 const UrgencyIndicator = ({ nivel }: { nivel: NivelRiesgo }) => {
   const urgencyConfig = {
-    Crítico: { 
-      icon: Zap, 
+    Crítico: {
+      icon: Zap,
       text: "ACCIÓN INMEDIATA REQUERIDA",
       pulse: true,
-      bg: "bg-white/20"
+      bg: "bg-white/20",
     },
-    Alto: { 
-      icon: AlertTriangle, 
+    Alto: {
+      icon: AlertTriangle,
       text: "REQUIERE ATENCIÓN URGENTE",
       pulse: true,
-      bg: "bg-white/15"
+      bg: "bg-white/15",
     },
-    Medio: { 
-      icon: AlertCircle, 
+    Medio: {
+      icon: AlertCircle,
       text: "MONITOREO ACTIVO NECESARIO",
       pulse: false,
-      bg: "bg-white/10"
+      bg: "bg-white/10",
     },
-    Bajo: { 
-      icon: Shield, 
+    Bajo: {
+      icon: Shield,
       text: "SITUACIÓN BAJO CONTROL",
       pulse: false,
-      bg: "bg-white/10"
+      bg: "bg-white/10",
     },
-  };
+  } as const;
 
   const config = urgencyConfig[nivel];
   const Icon = config.icon;
 
   return (
-    <div className={cn(
-      "flex items-center gap-3 px-4 py-3 rounded-xl border border-white/30",
-      config.bg,
-      "backdrop-blur-md"
-    )}>
+    <div
+      className={cn(
+        "flex items-center gap-3 px-4 py-3 rounded-xl border border-white/30",
+        config.bg,
+        "backdrop-blur-md"
+      )}
+    >
       <div className="relative">
         <Icon className="w-5 h-5 text-white" />
         {config.pulse && (
@@ -210,21 +212,53 @@ export default async function CasoPage({
 }) {
   const { captura_id } = await params;
 
+  // ------------------------------------------------------------
+  // FIX DEFINITIVO (append-only):
+  // - El captura_id de la URL puede ser viejo (v1/v2)
+  // - Resolvemos el "foco" (cliente_id + escenario_id)
+  // - Luego traemos la captura MÁS RECIENTE (por fecha_deteccion DESC)
+  // ------------------------------------------------------------
+
+  // 1) Foco
+  const { data: foco, error: focoError } = await supabaseServer
+    .from("vista_dashboard_riesgos_api")
+    .select("cliente_id, escenario_id")
+    .eq("captura_id", captura_id)
+    .maybeSingle();
+
+  if (focoError || !foco) notFound();
+
+  // 2) Caso más reciente para ese cliente + escenario
   const { data: caso, error } = await supabaseServer
     .from("vista_dashboard_riesgos_api")
     .select("*")
-    .eq("captura_id", captura_id)
+    .eq("cliente_id", foco.cliente_id)
+    .eq("escenario_id", foco.escenario_id)
+    .order("fecha_deteccion", { ascending: false })
+    .limit(1)
     .maybeSingle();
 
   if (error || !caso) notFound();
 
-  const { data: todosLosCasosRaw } = await supabaseServer
-    .from("vista_dashboard_riesgos_api")
-    .select("captura_id, escenario, nivel_riesgo, puntaje_global")
-    .eq("cliente_id", caso.cliente_id);
+  const latestCapturaId = caso.captura_id as string;
 
-  const todosLosCasos = (todosLosCasosRaw || [])
-    .filter((c: any) => c?.captura_id && c?.escenario)
+  // 3) Selector de casos: última captura por escenario (dedupe por escenario_id)
+  const { data: todosRaw } = await supabaseServer
+    .from("vista_dashboard_riesgos_api")
+    .select(
+      "captura_id, escenario_id, escenario, nivel_riesgo, puntaje_global, fecha_deteccion"
+    )
+    .eq("cliente_id", caso.cliente_id)
+    .order("fecha_deteccion", { ascending: false });
+
+  const seen = new Set<string>();
+  const todosLosCasos = (todosRaw || [])
+    .filter((c: any) => c?.captura_id && c?.escenario_id && c?.escenario)
+    .filter((c: any) => {
+      if (seen.has(c.escenario_id)) return false;
+      seen.add(c.escenario_id);
+      return true; // como viene desc, el primero por escenario_id es el latest
+    })
     .map((c: any) => ({
       captura_id: c.captura_id,
       escenario: c.escenario,
@@ -232,9 +266,7 @@ export default async function CasoPage({
       puntaje_global: c.puntaje_global ?? 0,
     }));
 
-  const nivel = isNivelRiesgo(caso.nivel_riesgo)
-    ? caso.nivel_riesgo
-    : "Medio";
+  const nivel = isNivelRiesgo(caso.nivel_riesgo) ? caso.nivel_riesgo : "Medio";
 
   const riskStyles = getRiskStyles(nivel);
   const scoreColors = getScoreBasedGradient(caso.puntaje_global ?? 50);
@@ -247,7 +279,7 @@ export default async function CasoPage({
   );
 
   const recomendacionPasos = caso.recomendacion
-    ? caso.recomendacion.split(/\.\s+/).filter(Boolean)
+    ? String(caso.recomendacion).split(/\.\s+/).filter(Boolean)
     : [];
 
   return (
@@ -256,7 +288,7 @@ export default async function CasoPage({
         <CaseSelectorHeader
           casos={todosLosCasos}
           currentCaso={{
-            captura_id,
+            captura_id: latestCapturaId,
             escenario: caso.escenario,
             nivel_riesgo: nivel,
             puntaje_global: caso.puntaje_global ?? 0,
@@ -266,9 +298,6 @@ export default async function CasoPage({
         />
 
         <div className="p-4 sm:p-6 lg:p-8 space-y-6">
-          
-          
-          
           {/* HERO DE RIESGO - HEADER DINÁMICO */}
           <div
             className="relative overflow-hidden rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)]"
@@ -277,13 +306,8 @@ export default async function CasoPage({
             }}
           >
             {/* Background con gradiente dinámico */}
-            <div 
-              className={cn(
-                "absolute inset-0",
-                scoreColors.headerBg
-              )}
-            />
-            
+            <div className={cn("absolute inset-0", scoreColors.headerBg)} />
+
             {/* Patrón de fondo */}
             <div
               className="absolute inset-0 opacity-[0.08]"
@@ -353,10 +377,8 @@ export default async function CasoPage({
 
           {/* GRID DE CONTENIDO */}
           <div className="grid lg:grid-cols-[1fr_340px] gap-6 lg:gap-8 items-start pb-20">
-            
             {/* COLUMNA PRINCIPAL */}
             <div className="space-y-6">
-              
               {/* QUÉ PASA SI NO ACTÚO - DESTACADO */}
               <div
                 className={cn(
@@ -366,26 +388,27 @@ export default async function CasoPage({
                 )}
               >
                 {/* Patrón de alerta sutil */}
-                <div 
+                <div
                   className="absolute top-0 right-0 w-32 h-32 opacity-5"
                   style={{
                     backgroundImage: `repeating-linear-gradient(45deg, ${scoreColors.accentColor} 0, ${scoreColors.accentColor} 2px, transparent 0, transparent 10px)`,
                   }}
                 />
-                
+
                 <div className="relative">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className={cn(
-                      "p-2.5 rounded-xl shadow-md",
-                      riskStyles.iconBg
-                    )}>
+                    <div
+                      className={cn("p-2.5 rounded-xl shadow-md", riskStyles.iconBg)}
+                    >
                       <DollarSign className={cn("w-6 h-6", riskStyles.iconText)} />
                     </div>
                     <div>
-                      <h3 className={cn(
-                        "font-black text-xs uppercase tracking-wider mb-1",
-                        riskStyles.lightText
-                      )}>
+                      <h3
+                        className={cn(
+                          "font-black text-xs uppercase tracking-wider mb-1",
+                          riskStyles.lightText
+                        )}
+                      >
                         Impacto si no se actúa
                       </h3>
                       <p className="text-[10px] text-slate-600 font-medium">
@@ -393,22 +416,26 @@ export default async function CasoPage({
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-baseline gap-2 mb-3">
-                    <p className={cn(
-                      "text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight",
-                      riskStyles.lightText
-                    )}>
+                    <p
+                      className={cn(
+                        "text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight",
+                        riskStyles.lightText
+                      )}
+                    >
                       {montoFormateado}
                     </p>
                     <TrendingDown className={cn("w-6 h-6 mb-2", riskStyles.iconText)} />
                   </div>
-                  
-                  <div className={cn(
-                    "inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold",
-                    riskStyles.iconBg,
-                    riskStyles.iconText
-                  )}>
+
+                  <div
+                    className={cn(
+                      "inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold",
+                      riskStyles.iconBg,
+                      riskStyles.iconText
+                    )}
+                  >
                     <AlertCircle className="w-4 h-4" />
                     <span>{financial.etiqueta || "Proyección de pérdida"}</span>
                   </div>
@@ -419,10 +446,7 @@ export default async function CasoPage({
               {signals.detalle && (
                 <div className="bg-white rounded-2xl p-6 shadow-md border-2 border-slate-200">
                   <div className="flex items-start gap-4">
-                    <div className={cn(
-                      "p-3 rounded-xl shadow-sm",
-                      riskStyles.iconBg
-                    )}>
+                    <div className={cn("p-3 rounded-xl shadow-sm", riskStyles.iconBg)}>
                       <AlertTriangle className={cn("w-6 h-6", riskStyles.iconText)} />
                     </div>
                     <div className="flex-1">
@@ -442,10 +466,14 @@ export default async function CasoPage({
                               key={i}
                               className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100"
                             >
-                              <div className={cn(
-                                "w-2 h-2 rounded-full",
-                                nivel === "Crítico" ? "bg-red-500 animate-pulse" : "bg-amber-500"
-                              )} />
+                              <div
+                                className={cn(
+                                  "w-2 h-2 rounded-full",
+                                  nivel === "Crítico"
+                                    ? "bg-red-500 animate-pulse"
+                                    : "bg-amber-500"
+                                )}
+                              />
                               <span className="text-sm font-medium text-slate-700">
                                 {ind}
                               </span>
@@ -478,20 +506,24 @@ export default async function CasoPage({
                   {recomendacionPasos.map((paso: string, i: number) => (
                     <div key={i} className="flex gap-4 group">
                       <div className="flex-shrink-0">
-                        <div className={cn(
-                          "w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black border-2 transition-all",
-                          i === 0 
-                            ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white border-blue-600 shadow-md" 
-                            : "bg-slate-100 text-slate-500 border-slate-200 group-hover:border-slate-300"
-                        )}>
+                        <div
+                          className={cn(
+                            "w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black border-2 transition-all",
+                            i === 0
+                              ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white border-blue-600 shadow-md"
+                              : "bg-slate-100 text-slate-500 border-slate-200 group-hover:border-slate-300"
+                          )}
+                        >
                           {i + 1}
                         </div>
                       </div>
                       <div className="flex-1 pt-1">
-                        <p className={cn(
-                          "text-sm leading-relaxed",
-                          i === 0 ? "text-slate-900 font-semibold" : "text-slate-600"
-                        )}>
+                        <p
+                          className={cn(
+                            "text-sm leading-relaxed",
+                            i === 0 ? "text-slate-900 font-semibold" : "text-slate-600"
+                          )}
+                        >
                           {paso}
                         </p>
                       </div>
@@ -523,7 +555,7 @@ export default async function CasoPage({
             {/* CHAT STICKY */}
             <div className="lg:sticky lg:top-24 z-40">
               <WhatsappChat
-                capturaId={captura_id}
+                capturaId={latestCapturaId}
                 className="w-full h-[600px] sm:h-[650px] shadow-2xl rounded-3xl border-2 border-emerald-100 ring-4 ring-emerald-50/50"
               />
             </div>
