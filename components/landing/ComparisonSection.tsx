@@ -30,7 +30,7 @@ export default function ComparisonSection() {
             <CardHeader className="relative z-10 border-b border-red-900/30 pb-6">
               <CardTitle className="flex items-center gap-3 text-2xl text-red-400">
                 <AlertCircle className="h-8 w-8 text-red-500" />
-                Sin SmartDash: Perdés guita todos los días y ni te enterás
+                Sin SmartDash: Perdés capital todos los días y ni te enterás
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6 relative z-10 pt-6">
@@ -42,7 +42,7 @@ export default function ComparisonSection() {
                   <p className="text-red-200 text-sm mt-1 mb-2">
                     El producto que más vendés se agotó el finde. Seguís
                     recibiendo pedidos, los cancelás y la reputación se te va al
-                    carajo.
+                    piso.
                   </p>
                   <p className="text-red-400 font-bold bg-red-950/50 inline-block px-2 py-1 rounded border border-red-900/50">
                     💸 Pérdida de $320.000.- en ventas y reputación
@@ -90,7 +90,7 @@ export default function ComparisonSection() {
 
               <div className="pt-6 border-t border-red-900/50 mt-4">
                 <p className="text-lg font-bold text-red-400 text-center">
-                  Total en una semana: más de $26.000 perdidos + noches sin
+                  Total en una semana: más de $466.000 perdidos + noches sin
                   dormir
                 </p>
               </div>
@@ -163,7 +163,7 @@ export default function ComparisonSection() {
 
               <div className="pt-6 border-t border-emerald-900/50 mt-4">
                 <p className="text-lg font-bold text-emerald-400 text-center">
-                  Impacto evitado: $260.000
+                  Impacto evitado: $460.000
                 </p>
               </div>
             </CardContent>

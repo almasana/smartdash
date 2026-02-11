@@ -1,0 +1,138 @@
+{
+    "app/page.tsx": [
+        {
+            "old": "Diagnóstico GRATIS en 60 segundos: ¿Cuánta plata estás perdiendo sin darte cu...",
+            "new": "Diagnóstico GRATIS en 60 segundos: medí dónde se te va la plata y qué podés ajustar."
+        },
+        {
+            "old": "Respondé 4 preguntas rápidas y te muestro exactamente cómo SmartDash blindarí...",
+            "new": "Respondé 4 preguntas rápidas y te muestro cómo SmartDash reduce riesgos en tu operación."
+        },
+        {
+            "old": "+127 vendedores ya protegen su plata con SmartDash",
+            "new": "+127 vendedores ya gestionan sus riesgos con SmartDash"
+        }
+    ],
+    "components/landing/HeroSection.tsx": [
+        {
+            "old": "SmartDash te avisa por WhatsApp antes de que sea tarde",
+            "new": "SmartDash te avisa por WhatsApp a tiempo para corregir desvíos."
+        },
+        {
+            "old": "🔥 Evitás perder u$s 8.000+ por mes en promedio",
+            "new": "Reducís pérdidas económicas mes a mes."
+        },
+        {
+            "old": "Salvás guita real",
+            "new": "Cuidás el capital de tu negocio."
+        },
+        {
+            "old": "Mensaje directo al celu. Actuás al toque.",
+            "new": "Mensaje directo al celular. Podés reaccionar rápido."
+        },
+        {
+            "old": "Cero cambios en tu laburo",
+            "new": "No necesitás cambiar tu forma de trabajar."
+        },
+        {
+            "old": "Seguís con tus sistemas. SmartDash solo vigila.",
+            "new": "Seguís usando tus sistemas. SmartDash monitorea por vos."
+        }
+    ],
+    "components/landing/VigilantSection.tsx": [
+        {
+            "old": "SmartDash es el empleado que nunca falta, nunca se equivoca y no cobra sueldo",
+            "new": "SmartDash es un sistema que monitorea tu negocio de forma continua."
+        },
+        {
+            "old": "Vigila tus números 24/7, te avisa solo cuando hay peligro y te ahorra miles t...",
+            "new": "Vigila tus números 24/7, te avisa solo cuando hay peligro para ahorrarte muchos problemas."
+        },
+        {
+            "old": "Vos seguís creciendo. Él protege tu plata.",
+            "new": "Vos seguís creciendo. Él protege tus intereses."
+        },
+        {
+            "old": "Cancelá cuando quieras • Sin compromiso • Empezás hoy",
+            "new": "Cancelás cuando quieras • Sin contratos • Empezás hoy"
+        }
+    ],
+    "components/landing/ComparisonSection.tsx": [
+        {
+            "old": "Una semana operando a ciegas vs. teniendo un vigilante que cuida tu plata",
+            "new": "Una semana operando a ciegas vs. teniendo un vigilante que cuida tu capital"
+        },
+        {
+            "old": "Lunes – Quiebre de stock que no viste venir",
+            "new": "Lunes – Falta de stock inesperada"
+        },
+        {
+            "old": "💸 Se te fueron $3.200 en ventas + reputación rota",
+            "new": "💸 Pérdida de $320.000.- en ventas y reputación"
+        },
+        {
+            "old": "Miércoles – Las ventas que se te escaparon",
+            "new": "Miércoles – Pérdida de oportunidades de venta"
+        },
+        {
+            "old": "💸 $7.800 que terminaron en el competidor",
+            "new": "💸 $780.000 desviados hacia competidores"
+        },
+        {
+            "old": "Viernes – El bloqueo que te arruina el finde",
+            "new": "El bloqueo que genera ansiedad"
+        },
+        {
+            "old": "“⚠️ Stock crítico: Auriculares Pro quedan solo 5. Reabastecé hoy para no perd...",
+            "new": "⚠️ Stock crítico: quedan 5 unidades. Reabastecé para evitar quiebres."
+        },
+        {
+            "old": "✅ Llamás al proveedor y lo resolvés al toque",
+            "new": "✅ Contactás al proveedor y resolvés el faltante"
+        },
+        {
+            "old": "Miércoles 2 PM – WhatsApp",
+            "new": "Miércoles 2 PM – Notificación por WhatsApp"
+        },
+        {
+            "old": "“📉 Ventas bajaron 38% vs lo habitual. Mirá precios o competencia antes de qu...",
+            "new": "📉 Ventas bajaron 38% vs lo habitual. Revisá precios y competencia."
+        },
+        {
+            "old": "✅ Bajás precios 10% y recuperás el terreno",
+            "new": "✅ Ajustás precios y recuperás competitividad"
+        },
+        {
+            "old": "Viernes 11 AM – WhatsApp",
+            "new": "Viernes 11 AM – Notificación por WhatsApp"
+        },
+        {
+            "old": "“⚠️ Reclamos al límite. Si sube más, ML te suspende. Mejorá envíos hoy.”",
+            "new": "⚠️ Reclamos al límite. Riesgo de suspensión. Revisión de envíos recomendada."
+        },
+        {
+            "old": "Mercado Libre te suspende la cuenta por reclamos. Te llega el mail justo cuan...",
+            "new": "Mercado Libre suspende la cuenta por reclamos acumulados."
+        },
+        {
+            "old": "😌 Dormís como un bebé",
+            "new": "Dormís tranquilo"
+        },
+        {
+            "old": "Lunes 9:30 AM – WhatsApp",
+            "new": "Lunes 9:30 AM – Alerta por WhatsApp"
+        },
+        {
+            "old": "Total salvado: más de $26.000 + noches tranquilas",
+            "new": "Impacto evitado: $260.000"
+        },
+        {
+            "old": "Pagás una miseria y evitás perder miles todos los meses",
+            "new": "Con una inversión muy baja, evitás pérdidas muy altas."
+        },
+        {
+            "old": "Tranquilidad total. Sabés que está todo controlado. Salís con la familia sin ...",
+            "new": "Trabajás con tranquilidad, sabiendo que el riesgo está controlado."
+        }
+    ]
+}

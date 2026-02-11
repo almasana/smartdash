@@ -20,7 +20,7 @@ export default function HeroSection() {
 
             {/* H1 – Tamaños más controlados */}
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
-              Dejá de perder u$s 8.000+ por mes por errores que no ves.
+              Dejá de perder capital por errores que no ves.
               <br />
               <span className="text-[#FF5733] block mt-2">
                 SmartDash te avisa por WhatsApp a tiempo para corregir desvíos.
@@ -28,7 +28,7 @@ export default function HeroSection() {
             </h1>
 
             <p className="text-base lg:text-lg text-indigo-100 mx-auto lg:mx-0 max-w-xl">
-              Te conectás en minutos a Mercado Libre, Tango, Excel y AFIP.
+              Te conectás en minutos a Mercado Libre, Tango, Excel y ARCA.
               Recibís alertas instantáneas cuando algo anda mal.
             </p>
 
