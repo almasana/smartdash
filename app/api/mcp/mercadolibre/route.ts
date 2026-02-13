@@ -41,10 +41,22 @@ async function handleProxy(req: NextRequest) {
         // Forwardear headers relevantes
         req.headers.forEach((value, key) => {
             const lower = key.toLowerCase();
-            if (["content-type", "accept", "user-agent", "x-mcp"].some(k => lower.includes(k))) {
+            // Preservar la mayoría de los headers pero filtrar los que causen problemas
+            if (!["host", "connection", "origin", "cookie"].includes(lower)) {
                 headers.set(key, value);
             }
         });
+
+        // REGLA CRÍTICA: Si es un inicio de conexión MCP (GET) o se espera streaming,
+        // Mercado Libre EXIGE explícitamente este header.
+        if (req.method === "GET") {
+            headers.set("Accept", "text/event-stream");
+        } else if (!headers.has("Accept")) {
+            headers.set("Accept", "application/json, text/event-stream");
+        }
+
+        headers.set("Cache-Control", "no-cache");
+        headers.set("Connection", "keep-alive");
 
         // Inyectar Auth Token
         headers.set("Authorization", `Bearer ${accessToken}`);
