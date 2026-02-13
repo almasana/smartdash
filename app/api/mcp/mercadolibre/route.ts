@@ -38,11 +38,14 @@ async function handleProxy(req: NextRequest) {
         url.searchParams.forEach((value, key) => targetUrl.searchParams.set(key, value));
 
         const headers = new Headers();
-        // Forwardear headers relevantes
+
+        // ALLOWLIST ESTRICTA para evitar 431 Request Header Fields Too Large
+        // Solo permitimos headers esenciales para el protocolo MCP y HTTP básico
+        const allowedHeaders = ["content-type", "accept", "user-agent"];
+
         req.headers.forEach((value, key) => {
             const lower = key.toLowerCase();
-            // Preservar la mayoría de los headers pero filtrar los que causen problemas
-            if (!["host", "connection", "origin", "cookie"].includes(lower)) {
+            if (allowedHeaders.includes(lower) || lower.startsWith("x-mcp-")) {
                 headers.set(key, value);
             }
         });
