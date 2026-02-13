@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getValidMeliAccessToken } from "@/lib/meli-auth";
 import { supabaseAdmin } from "@/lib/supabase-server";
 
+// Configuración Vercel Serverless para Streaming
+export const dynamic = "force-dynamic"; // Deshabilitar caché estático
+export const maxDuration = 60; // Aumentar timeout (máximo permitido en plan Pro/Hobby)
+
+
 // URL base del MCP de Mercado Libre
 const MCP_UPSTREAM_URL = "https://mcp.mercadolibre.com/mcp";
 
