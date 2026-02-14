@@ -39,7 +39,7 @@ pnpm-debug.log*
 .env.production.local
 **/.agent/
 .groq
-.github
+
 
 # ===============================
 # OS / Editor junk

@@ -1,0 +1,19 @@
+name: Post-deploy Smoke (MercadoLibre MCP)
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run smoke tests
+        env:
+          BASE_URL: https://mismartdash.vercel.app
+        run: |
+          chmod +x scripts/smoke-meli.sh
+          ./scripts/smoke-meli.sh
