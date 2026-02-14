@@ -60,6 +60,7 @@ export async function processWebhookEvent(event: any): Promise<void> {
             signal_key: 'sla_breach_risk',
             severity: 'low',
             score: 10,
+            rule_version: 1,
             evidence: {
                 webhook_event_id: event.id,
                 topic: event.topic
