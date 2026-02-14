@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     hasClientSecret: !!process.env.MELI_CLIENT_SECRET
   };
 
-  const supabaseStatus = {
+  const supabaseStatus: { canInit: boolean; canSelect: boolean; error?: string } = {
     canInit: false,
     canSelect: false
   };
@@ -22,17 +22,20 @@ export async function GET(req: NextRequest) {
     supabaseStatus.canInit = true;
 
     // Try a simple select to check connectivity
-    const { data, error } = await supabaseAdmin.from("meli_oauth_tokens").select("id").limit(1);
+    // Using maybeSingle() to avoid error if table is empty but exists
+    const { data, error } = await supabaseAdmin.from("meli_oauth_tokens").select("user_id").limit(1).maybeSingle();
 
     if (!error) {
       supabaseStatus.canSelect = true;
     } else {
       console.error("[HEALTH] Supabase select failed:", error.message);
       supabaseStatus.canSelect = false;
+      supabaseStatus.error = error.message;
     }
   } catch (e: any) {
     console.error("[HEALTH] Supabase init or select exception:", e);
     supabaseStatus.canSelect = false;
+    supabaseStatus.error = e.message || String(e);
   }
 
   // Token status
@@ -40,12 +43,15 @@ export async function GET(req: NextRequest) {
   try {
     if (supabaseStatus.canSelect) {
       const token = await getActiveToken();
+      
       if (token) {
         if (isExpired(token)) {
           tokenStatus = "expired";
         } else {
           tokenStatus = "valid";
         }
+      } else {
+        tokenStatus = "missing"; 
       }
     }
   } catch (e) {
