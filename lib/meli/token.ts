@@ -27,7 +27,18 @@ export async function getActiveToken(): Promise<MeliToken | null> {
     return null;
   }
 
-  return data as MeliToken;
+  const token = data as MeliToken;
+
+  if (!token.refresh_token) {
+    console.warn(`[MELI_TOKEN] Token for user ${token.user_id} is missing 'refresh_token'. Marking as invalid.`);
+    // Opcional: Podríamos retornar null aquí, pero el usuario pidió "marcarlo como inválido"
+    // Si retornamos el token sin refresh_token, el siguiente paso refreshToken() fallará.
+    // El usuario pidió: "marcarlo como inválido (y NO intentar refresh) y loggear".
+    // Si retornamos null, el proxy devolverá 401 (que es lo deseado).
+    return null; 
+  }
+
+  return token;
 }
 
 /**
@@ -48,7 +59,9 @@ export async function refreshToken(token: MeliToken): Promise<MeliToken> {
   const clientSecret = requireEnvAny(["MELI_CLIENT_SECRET"]);
 
   if (!token.refresh_token) {
-    throw new Error("Missing 'refresh_token' in active token data.");
+    // Retornar error manejado 401 JSON {error:"missing_refresh_token"}
+    // Lanzamos error con prefijo REFRESH_FAILED para que el proxy lo capture y devuelva 401
+    throw new Error(`REFRESH_FAILED: missing_refresh_token`);
   }
 
   const params = new URLSearchParams();
@@ -68,21 +81,26 @@ export async function refreshToken(token: MeliToken): Promise<MeliToken> {
     throw new Error(`REFRESH_NETWORK_ERROR: ${error.message}`);
   }
 
+  const data = await res.json();
+
   if (!res.ok) {
-    const errorText = await res.text();
-    const bodyPreview = errorText.substring(0, 200);
+    const errorMsg = data.message || res.statusText;
+    const bodyPreview = JSON.stringify(data).substring(0, 200);
     console.error("meli_refresh_failed", { status: res.status, bodyPreview });
     // Lanzamos error que inicia con REFRESH_FAILED para que el proxy lo maneje como 401
     throw new Error(`REFRESH_FAILED: ${res.status} - ${bodyPreview}`);
   }
 
-  const data = await res.json();
   const newExpiresAt = new Date(Date.now() + (data.expires_in - 60) * 1000).toISOString();
+
+  // Asegurar que el nuevo token tenga refresh_token (ML a veces devuelve uno nuevo, a veces no)
+  // Si no devuelve uno nuevo, mantener el anterior.
+  const newRefreshToken = data.refresh_token || token.refresh_token;
 
   return {
     ...token,
     access_token: data.access_token,
-    refresh_token: data.refresh_token || token.refresh_token,
+    refresh_token: newRefreshToken,
     expires_at: newExpiresAt,
     raw: data,
   };

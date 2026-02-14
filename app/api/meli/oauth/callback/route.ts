@@ -61,6 +61,14 @@ export async function GET(req: NextRequest) {
             );
         }
 
+        if (!tokenJson.refresh_token) {
+            console.error("[OAUTH] Missing refresh_token in ML response:", tokenJson);
+            return NextResponse.json(
+                { error: "Mercado Libre didn't provide a refresh_token. Check app settings.", details: tokenJson },
+                { status: 500 }
+            );
+        }
+
         // Persistencia en Supabase
         const expiresAt = tokenJson.expires_in
             ? new Date(Date.now() + tokenJson.expires_in * 1000).toISOString()

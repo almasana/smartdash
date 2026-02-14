@@ -20,6 +20,7 @@ export async function GET(req: NextRequest) {
   let supabaseSelectOk = false;
   let supabaseError: string | null = null;
   let tokenStatus = "unknown";
+  let hasRefreshToken = false;
 
   try {
     const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -37,6 +38,9 @@ export async function GET(req: NextRequest) {
             supabaseSelectOk = true;
             if (data && data.length > 0) {
                 tokenStatus = "present";
+                if (data[0].refresh_token) {
+                    hasRefreshToken = true;
+                }
             } else {
                 tokenStatus = "missing_in_db";
             }
@@ -57,7 +61,8 @@ export async function GET(req: NextRequest) {
             select: supabaseSelectOk,
             error: supabaseError
         },
-        token: tokenStatus
+        token: tokenStatus,
+        hasRefreshToken
     },
     timestamp: new Date().toISOString()
   };
